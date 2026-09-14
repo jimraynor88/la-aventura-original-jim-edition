@@ -480,14 +480,14 @@ body {
         ${item('📂', 'Cargar',          'Retomar una partida guardada',     'load')}
         ${item('🔄', 'Reiniciar',       'Volver al principio',              'restart')}
 
-        <h3>Ajustes</h3>
+         <h3>Ajustes</h3>
         ${item('🔠', 'Tamaño del juego', 'Texto de la aventura',            'font')}
         ${item('🪟', 'Tamaño de menús',  'Interfaz y ventanas',             'ui')}
         ${item(settings.sound === false ? '🔇' : '🔊',
                'Sonido',      settings.sound === false ? 'Desactivado' : 'Activado', 'sound')}
         ${item(settings.graphics === false ? '🚫' : '🖼️',
                'Gráficos',    settings.graphics === false ? 'Desactivados' : 'Activados', 'graphics')}
-
+        ${item('📡', 'Estado offline',   'Comprobar caché y modo sin conexión', 'offline')}
         <h3>Ayuda</h3>
         ${item('📖', 'Cómo jugar',  'Guía básica de la aventura', 'guide')}
         ${item('⌨️', 'Comandos',    'Listado por categorías',     'cmds')}
@@ -505,6 +505,7 @@ body {
           guide:    () => pushView(viewGuide()),
           cmds:     () => pushView(viewCommands()),
           about:    () => pushView(viewAbout()),
+          offline:  () => pushView(viewOffline()),
         });
       }
     };
@@ -983,6 +984,95 @@ body {
   }
 
   // =========================================================
+  //  VISTA: ESTADO OFFLINE (diagnóstico)
+  // =========================================================
+  async function viewOffline() {
+    let swSupported = ('serviceWorker' in navigator);
+    let swReg = null, swActive = false, swController = false;
+    let cacheName = null, cacheCount = 0, error = null;
+
+    try {
+      if (swSupported) {
+        swReg = await navigator.serviceWorker.getRegistration();
+        if (swReg) {
+          swActive     = !!swReg.active;
+          swController = !!navigator.serviceWorker.controller;
+        }
+      }
+      const names = await caches.keys();
+      for (const name of names) {
+        if (!name.startsWith('aventura')) continue;
+        const c    = await caches.open(name);
+        const keys = await c.keys();
+        if (keys.length > cacheCount) {
+          cacheName  = name;
+          cacheCount = keys.length;
+        }
+      }
+    } catch (e) { error = e.message; }
+
+    const row = (label, value, ok) =>
+      `<div class="ng-row">
+         <span class="ng-row-name">${esc(label)}</span>
+         <span class="ng-row-meta" style="color:${ok === false ? '#e88' : ok === true ? '#8d8' : '#ccc'}">
+           ${esc(value)}
+         </span>
+       </div>`;
+
+    return {
+      title: '📡 Estado offline',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Comprueba si la app está lista para funcionar sin conexión.
+        </p>
+
+        <h3>Servicio offline (SW)</h3>
+        ${row('Soportado',    swSupported ? '✅ Sí' : '❌ No', swSupported)}
+        ${row('Registrado',   swReg ? '✅ Sí' : '❌ No', !!swReg)}
+        ${row('Activo',       swActive ? '✅ Sí' : '❌ No', swActive)}
+        ${row('Controlando',  swController ? '✅ Sí' : '⚠️ Recarga', swController)}
+
+        <h3>Archivos en caché</h3>
+        ${row(cacheName || '(ninguno)', cacheCount + ' archivos', cacheCount > 30)}
+
+        ${error ? `<h3>Errores</h3><p style="color:#f88;font-size:.85em">${esc(error)}</p>` : ''}
+
+        <h3>Acciones</h3>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+          <button id="ng-ck-recheck" class="ng-btn">🔁 Volver a comprobar</button>
+          <button id="ng-ck-force"   class="ng-btn primary">⬇️ Forzar re-descarga de todo</button>
+          <button id="ng-ck-clear"   class="ng-btn danger">🗑️ Borrar toda la caché</button>
+        </div>
+
+        <p style="color:#777;font-size:.8em;margin-top:16px">
+          <b>Controlando ⚠️</b> → cierra y reabre la app, o recarga.
+          <b>Menos de 30 archivos</b> → aún se está descargando: espera 1 minuto con red.
+          Todo debería llegar a <b>~110 archivos</b> cuando esté completo.
+        </p>
+      `,
+      onMount() {
+        $('#ng-ck-recheck').addEventListener('click', () => replaceView(viewOffline()));
+
+        $('#ng-ck-force').addEventListener('click', () => {
+          if (!navigator.serviceWorker.controller) {
+            toast('Primero recarga la página');
+            return;
+          }
+          navigator.serviceWorker.controller.postMessage('FORCE_RECACHE');
+          toast('Re-descargando caché...');
+        });
+
+        $('#ng-ck-clear').addEventListener('click', async () => {
+          if (!confirm('¿Borrar toda la caché? La próxima visita tardará más.')) return;
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+          toast('Caché borrada. Cierra y reabre la app.');
+        });
+      }
+    };
+  }
+     
+  // =========================================================
   //  VISTA: ACERCA DE
   // =========================================================
   function viewAbout() {
@@ -1057,11 +1147,12 @@ body {
   function registerSW() {
     if (!('serviceWorker' in navigator)) return;
     if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('SW registrado. Scope:', reg.scope))
-        .catch(err => console.warn('SW no registrado:', err));
-    });
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then(reg => {
+        console.log('SW registrado. Scope:', reg.scope);
+        reg.update().catch(() => {});
+      })
+      .catch(err => console.warn('SW no registrado:', err));
   }
 
   // =========================================================
