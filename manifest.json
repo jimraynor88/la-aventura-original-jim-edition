@@ -1,0 +1,20 @@
+{
+  "name": "La Aventura Original",
+  "short_name": "Aventura",
+  "description": "Adaptación a ngPAWS de la aventura original de Aventuras AD",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "dat/intro.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
