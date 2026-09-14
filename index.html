@@ -505,8 +505,7 @@ body {
           guide:    () => pushView(viewGuide()),
           cmds:     () => pushView(viewCommands()),
           about:    () => pushView(viewAbout()),
-          offline:  () => pushView(viewOffline()),
-        });
+          offline:  async () => pushView(await viewOffline()),        });
       }
     };
   }
