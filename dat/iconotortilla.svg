@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="22.81" width="23" version="1.1" y="0px" x="0px" viewBox="0 0 23 22.81482">
+ <defs>
+  <style type="text/css">.fil0 {fill:black}</style>
+ </defs>
+ <title>Extra Bold Torch No-Light</title>
+ <desc>Created with Sketch.</desc>
+ <g style="display:none" transform="translate(-56.37 -109.5)" display="none">
+  <g style="display:inline" stroke-miterlimit="10" display="inline">
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" y2="192" x2="192"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" y2="192" x2="0" x1="192"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" y2="96" x2="0" y1="96" x1="192"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" y2="192" x2="96" x1="96"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m172 159.6c0 6.869-5.568 12.44-12.44 12.44h-127.2c-6.83 0-12.4-5.6-12.4-12.4v-127.2c0-6.83 5.57-12.4 12.44-12.4h127.2c6.8 0 12.4 5.57 12.4 12.44z"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m184 149.5c0 5.8-6.4 10.5-14.4 10.5h-147.2c-7.95 0-14.4-4.7-14.4-10.5v-107c0-5.81 6.45-10.5 14.4-10.5h147.2c7.953 0 14.4 4.688 14.4 10.47z"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m149.5 8c5.8 0 10.5 6.45 10.5 14.4v147.2c0 7.953-4.688 14.4-10.47 14.4h-107c-5.81 0-10.5-6.4-10.5-14.4v-147.2c0-7.95 4.69-14.4 10.47-14.4z"/>
+   <circle style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" cx="96" cy="96" r="88"/>
+  </g>
+ </g>
+ <g style="display:none" transform="translate(-56.37 -109.5)" display="none">
+  <g style="display:inline" stroke-miterlimit="10" display="inline">
+   <path style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" d="m105.6 8h-19.19c-6.447 0-5.813 6.182-5.813 6.182v17.82h30.81v-17.82s0.635-6.182-5.812-6.182z"/>
+   <path style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" d="m114.6 44.2c-4-3.72-3.2-12.2-3.2-12.2h-30.82s0.848 8.475-3.221 12.2c-4.07 3.73-21.36 11.87-21.36 31.7v86.62s0.304 21.48 13.48 21.48h53.03c13.18 0 13.49-21.48 13.49-21.48v-86.62c0-19.83-17.29-27.97-21.36-31.7z"/>
+   <line style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" y2="32" x2="117" y1="32" x1="74.96"/>
+  </g>
+ </g>
+ <path style="color-rendering:auto;color:#000000;isolation:auto;mix-blend-mode:normal;shape-rendering:auto;solid-color:#000000;image-rendering:auto;fill:#fff" d="m11.5 0.5742c-2.96 0-5.912 0.7828-7.867 2.707-1.997 1.965-2.967 5.104-2.967 8.129 0 2.31 0.2558 4.89 1.955 6.21 1.414 1.09 2.593 2.36 3.84 3.38 1.315 1.08 3.22 1.24 5.039 1.24 5.98 0 10.83-4.85 10.83-10.83 0-3.676-2.03-6.486-4.82-8.445-1.76-1.231-3.7-2.391-6.01-2.391zm-4.08 2.78a0.7257 0.5036 0 0 1 0.726 0.503 0.7257 0.5036 0 0 1 -0.726 0.504 0.7257 0.5036 0 0 1 -0.725 -0.504 0.7257 0.5036 0 0 1 0.725 -0.503zm5.9 0.74a0.5036 0.1925 0 0 1 0.04 0 0.5036 0.1925 0 0 1 0.5 0.193 0.5036 0.1925 0 0 1 -0.5 0.192 0.5036 0.1925 0 0 1 -0.5 -0.192 0.5036 0.1925 0 0 1 0.46 -0.193zm0.59 4.324a0.3406 0.3999 0 0 1 0.34 0.4 0.3406 0.3999 0 0 1 -0.34 0.401 0.3406 0.3999 0 0 1 -0.34 -0.401 0.3406 0.3999 0 0 1 0.34 -0.4zm-9.955 1.692a0.2518 0.5332 0 0 1 0.252 0.53 0.2518 0.5332 0 0 1 -0.252 0.53 0.2518 0.5332 0 0 1 -0.252 -0.53 0.2518 0.5332 0 0 1 0.252 -0.53zm6.045 3.26a0.5036 0.2666 0 0 1 0.01 0 0.5036 0.2666 0 0 1 0.03 0 0.5036 0.2666 0 0 1 0.5 0.26 0.5036 0.2666 0 0 1 -0.5 0.27 0.5036 0.2666 0 0 1 -0.501 -0.27 0.5036 0.2666 0 0 1 0.461 -0.26zm8.09 2.31a0.311 0.237 0 0 1 0.02 0 0.311 0.237 0 0 1 0.31 0.23 0.311 0.237 0 0 1 -0.31 0.24 0.311 0.237 0 0 1 -0.31 -0.24 0.311 0.237 0 0 1 0.29 -0.23zm-3.84 0.94a0.4147 0.1481 0 0 1 0.41 0.15 0.4147 0.1481 0 0 1 -0.41 0.15 0.4147 0.1481 0 0 1 -0.42 -0.15 0.4147 0.1481 0 0 1 0.42 -0.15zm-4.551 2.43a0.08886 0.07405 0 0 1 0.002 0 0.08886 0.07405 0 0 1 0.008 0 0.08886 0.07405 0 0 1 0.008 0 0.08886 0.07405 0 0 1 0.088 0.08 0.08886 0.07405 0 0 1 -0.088 0.07 0.08886 0.07405 0 0 1 -0.09 -0.07 0.08886 0.07405 0 0 1 0.072 -0.08z"/>
+</svg>

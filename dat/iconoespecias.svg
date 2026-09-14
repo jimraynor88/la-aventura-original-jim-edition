@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" height="21.81" width="28" version="1.1" y="0px" x="0px" viewBox="0 0 27.996173 21.814603">
+ <title>Extra Bold Torch No-Light</title>
+ <desc>Created with Sketch.</desc>
+ <g style="display:none" transform="translate(9.291 -69.35)" display="none">
+  <g style="stroke-miterlimit:10;display:inline" stroke-miterlimit="10" display="inline">
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" y2="192" x2="192"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" x1="192" x2="0" y2="192"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" x1="192" y1="96" x2="0" y2="96"/>
+   <line style="stroke-linejoin:round;stroke:#e6e7e8;stroke-width:3;stroke-miterlimit:10" x1="96" x2="96" y2="192"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m172 159.6c0 6.869-5.568 12.44-12.44 12.44h-127.2c-6.83 0-12.4-5.6-12.4-12.4v-127.2c0-6.83 5.57-12.4 12.44-12.4h127.2c6.8 0 12.4 5.57 12.4 12.44z"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m184 149.5c0 5.8-6.4 10.5-14.4 10.5h-147.2c-7.95 0-14.4-4.7-14.4-10.5v-107c0-5.81 6.45-10.5 14.4-10.5h147.2c7.953 0 14.4 4.688 14.4 10.47z"/>
+   <path style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" d="m149.5 8c5.8 0 10.5 6.45 10.5 14.4v147.2c0 7.953-4.688 14.4-10.47 14.4h-107c-5.81 0-10.5-6.4-10.5-14.4v-147.2c0.03-7.95 4.72-14.4 10.5-14.4z"/>
+   <circle style="stroke-linejoin:round;stroke:#6d6e71;stroke-width:3;stroke-miterlimit:10" cx="96" r="88" cy="96"/>
+  </g>
+ </g>
+ <g style="display:none" transform="translate(9.291 -69.35)" display="none">
+  <g style="stroke-miterlimit:10;display:inline" stroke-miterlimit="10" display="inline">
+   <path style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" d="m105.6 8h-19.19c-6.447 0-5.813 6.182-5.813 6.182v17.82h30.81v-17.82s0.635-6.182-5.812-6.182z"/>
+   <path style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" d="m114.6 44.2c-4-3.72-3.2-12.2-3.2-12.2h-30.82s0.848 8.475-3.221 12.2c-4.07 3.73-21.36 11.87-21.36 31.7v86.62s0.304 21.48 13.48 21.48h53.03c13.18 0 13.49-21.48 13.49-21.48v-86.6c0-19.83-17.29-27.97-21.36-31.7z"/>
+   <line style="stroke-linejoin:round;stroke:#000;stroke-linecap:round;stroke-miterlimit:10;stroke-width:6;fill:none" x1="74.96" y1="32" x2="117" y2="32"/>
+  </g>
+ </g>
+ <g style="fill:#fff;fill-rule:evenodd" transform="matrix(1.167 0 0 1.167 -.1223 .3817)">
+  <g style="fill:#fff">
+   <path style="fill:#fff" d="m5.69 4.02c-0.433 0-0.784-0.352-0.784-0.785v-0.43c0-0.433 0.351-0.785 0.784-0.785h12.7c0.433 0 0.784 0.352 0.784 0.785v0.43c0 0.433-0.351 0.785-0.784 0.785h-12.21zm17.62 5.533c-0.867-1.48-2.239-2.361-3.675-2.361h-0.028c-0.579 0.002-1.33-0.08-1.675-0.509-0.151-0.188-0.215-0.43-0.237-0.663h0.696c1.535 0 2.784-1.249 2.784-2.785v-0.43c0-1.536-1.249-2.785-2.784-2.785h-12.71c-1.535 0-2.784 1.249-2.784 2.785v0.43c0 1.536 1.249 2.785 2.784 2.785h0.821c-0.022 0.233-0.085 0.475-0.237 0.663-0.336 0.419-1.063 0.509-1.632 0.509h-0.071c-1.436 0-2.808 0.881-3.675 2.361-1.001 1.709-1.06 3.757-0.153 5.344 0.451 0.789 1.244 1.663 2.634 2.286 0.545-0.873 1.134-1.821 1.697-2.728 1.688-2.72 3.283-5.289 3.76-5.939 0.861-1.174 2.015-1.839 3.251-1.874 1.198-0.022 2.438 0.571 3.375 1.708 0.445 0.54 1.895 2.833 4.231 6.545 0.452 0.717 0.918 1.459 1.37 2.174 1.243-0.613 1.974-1.429 2.399-2.172 0.906-1.587 0.847-3.635-0.154-5.344z"/>
+   <path style="fill:#fff" d="m13.92 9.621c-0.533-0.648-1.143-0.979-1.775-0.98-0.605 0.017-1.206 0.393-1.694 1.058-0.431 0.588-2.08 3.243-3.674 5.811-0.488 0.786-0.965 1.554-1.414 2.275 0.754 0.144 1.61 0.232 2.598 0.235h8.292c1.105-0.003 2.053-0.109 2.868-0.287-0.35-0.554-0.716-1.135-1.118-1.773-1.728-2.746-3.687-5.858-4.083-6.339"/>
+  </g>
+ </g>
+</svg>
