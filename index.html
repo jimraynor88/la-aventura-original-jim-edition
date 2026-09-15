@@ -467,76 +467,79 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
     }
   })();
 
-  // =========================================================
-  //  BARRA RÁPIDA + BOTÓN DIAGONALES
-  //  Organización:
-  //    borde izq.  : Diagonales, Salir, Bajar
-  //    centro-izq. : Oeste, Sur, Salidas
-  //    centro      : MIRAR (destacado)
-  //    centro-der. : Inven., Norte, Este
-  //    borde der.  : Subir, Entrar
-  // =========================================================
-  function addQuickBar() {
-    if ($('#ng-quickbar')) return;
-    const bar = document.createElement('div');
-    bar.id = 'ng-quickbar';
+// =========================================================
+//  BARRA RÁPIDA (2 filas) + BOTÓN DIAGONALES
+//  Fila superior: Salidas · Salir · Inven · Entrar · Mirar
+//  Fila inferior: Bajar · Oeste · Sur · Diag. · Norte · Este · Subir
+//  Agrupación visual:
+//    izquierda (rojo tenue) → salir / salidas / bajar
+//    centro (neutro)        → direcciones + Diag
+//    derecha (azul tenue)   → entrar / subir / mirar
+// =========================================================
+function addQuickBar() {
+  if ($('#ng-quickbar')) return;
+  const bar = document.createElement('div');
+  bar.id = 'ng-quickbar';
 
-    const cmds = [
-      // --- Borde izquierdo ---
-      { label: 'Diag.',   cmd: '__DIAG__', diag: true },
-      { label: 'Salir',   cmd: 'SALIR' },
-      { label: 'Bajar',   cmd: 'BAJAR' },
-      // --- Centro-izquierda ---
-      { label: 'Oeste',   cmd: 'OESTE' },
-      { label: 'Sur',     cmd: 'SUR' },
-      { label: 'Salidas', cmd: 'SALIDAS' },
-      // --- Centro ---
-      { label: 'MIRAR',   cmd: 'MIRAR', primary: true },
-      // --- Centro-derecha ---
-      { label: 'Inven.',  cmd: 'INVENTARIO' },
-      { label: 'Norte',   cmd: 'NORTE' },
-      { label: 'Este',    cmd: 'ESTE' },
-      // --- Borde derecho ---
-      { label: 'Subir',   cmd: 'SUBIR' },
-      { label: 'Entrar',  cmd: 'ENTRAR' },
-    ];
+  // --- Fila superior ---
+  const rowTop = [
+    { label: 'Salidas', cmd: 'SALIDAS',     cls: 'out' },
+    { label: 'Salir',   cmd: 'SALIR',       cls: 'out' },
+    { label: 'Inven.',  cmd: 'INVENTARIO',  cls: '' },
+    { label: 'Entrar',  cmd: 'ENTRAR',      cls: 'in' },
+    { label: 'MIRAR',   cmd: 'MIRAR',       cls: 'in primary' },
+  ];
 
-    bar.innerHTML = cmds.map(c => {
-      const extra = c.primary ? ' primary' : (c.diag ? ' diag' : '');
-      return `<button class="ng-qb-btn${extra}" data-cmd="${c.cmd}">${c.label}</button>`;
-    }).join('');
-    document.body.appendChild(bar);
+  // --- Fila inferior ---
+  const rowBot = [
+    { label: 'Bajar',  cmd: 'BAJAR',      cls: 'out' },
+    { label: 'Oeste',  cmd: 'OESTE',      cls: 'dir' },
+    { label: 'Sur',    cmd: 'SUR',        cls: 'dir' },
+    { label: 'Diag.',  cmd: '__DIAG__',   cls: 'diag' },
+    { label: 'Norte',  cmd: 'NORTE',      cls: 'dir' },
+    { label: 'Este',   cmd: 'ESTE',       cls: 'dir' },
+    { label: 'Subir',  cmd: 'SUBIR',      cls: 'in' },
+  ];
 
-    // Panel de diagonales
-    addDiagPopup();
+  const renderBtn = c =>
+    `<button class="ng-qb-btn ${c.cls || ''}" data-cmd="${c.cmd}">${c.label}</button>`;
 
-    bar.addEventListener('click', e => {
-      const btn = e.target.closest('.ng-qb-btn');
-      if (!btn) return;
-      if (!canSendCommand()) return;
+  bar.innerHTML =
+    `<div class="ng-qb-row ng-qb-row-top">${rowTop.map(renderBtn).join('')}</div>` +
+    `<div class="ng-qb-row ng-qb-row-bot">${rowBot.map(renderBtn).join('')}</div>`;
 
-      if (btn.dataset.cmd === '__DIAG__') {
-        toggleDiag(btn);
-        return;
-      }
+  document.body.appendChild(bar);
 
-      closeDiag();
-      try { window.orderEnteredLoop(btn.dataset.cmd); }
-      catch (err) { console.warn('Quickbar:', err); }
-    });
+  // Panel de diagonales
+  addDiagPopup();
 
-    // Cerrar el panel al tocar fuera
-    document.addEventListener('pointerdown', e => {
-      const pop = $('#ng-diag-popup');
-      if (!pop || !pop.classList.contains('open')) return;
-      if (pop.contains(e.target)) return;
-      if (e.target.closest('#ng-quickbar')) return;
-      closeDiag();
-    });
+  bar.addEventListener('click', e => {
+    const btn = e.target.closest('.ng-qb-btn');
+    if (!btn) return;
+    if (!canSendCommand()) return;
 
-    // Cerrar el panel al hacer scroll en la barra
-    bar.addEventListener('scroll', closeDiag, { passive: true });
-  }
+    if (btn.dataset.cmd === '__DIAG__') {
+      toggleDiag(btn);
+      return;
+    }
+
+    closeDiag();
+    try { window.orderEnteredLoop(btn.dataset.cmd); }
+    catch (err) { console.warn('Quickbar:', err); }
+  });
+
+  // Cerrar el panel al tocar fuera
+  document.addEventListener('pointerdown', e => {
+    const pop = $('#ng-diag-popup');
+    if (!pop || !pop.classList.contains('open')) return;
+    if (pop.contains(e.target)) return;
+    if (e.target.closest('#ng-quickbar')) return;
+    closeDiag();
+  });
+
+  // Ya no hay scroll horizontal, pero si alguien toca la barra cerramos diag
+  bar.addEventListener('scroll', closeDiag, { passive: true });
+}
 
   // ---- Panel desplegable de diagonales ----
   function addDiagPopup() {
@@ -1514,33 +1517,55 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   // =========================================================
   //  VISTA: ACERCA DE
   // =========================================================
-  function viewAbout() {
-    return {
-      title: 'ℹ️ Acerca de',
-      html: `
-        <h3>La Aventura Original</h3>
-        <p>Adaptación a <b>ngPAWS</b> de la aventura original de <b>Aventuras AD</b>
-        (versión reducida de <i>Advent</i>), publicada en 1989.</p>
-        <h3>Créditos originales</h3>
-        <ul>
-          <li><b>Dirección:</b> Andrés Samudio</li>
-          <li><b>Programación:</b> Manuel González</li>
-          <li><b>Gráficos:</b> Carlos Marqués</li>
-        </ul>
-        <h3>Adaptación</h3>
-        <ul>
-          <li><b>ngPAWS:</b> CiberSheep</li>
-          <li><b>Betatesting:</b> Uto, I. Cabanillas, Baltasar el Arquero</li>
-        </ul>
-        <h3>Tecnología</h3>
-        <p>Motor <b>ngPAWS</b> (C) Carlos Sánchez, MIT.<br>
-        Sonido <b>buzz.js</b> (C) Jay Salvat, MIT.<br>
-        <b>jQuery</b> (C) jQuery Foundation, MIT.</p>
-        <h3>Offline</h3>
-        <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
-      `
-    };
-  }
+function viewAbout() {
+  return {
+    title: 'ℹ️ Acerca de',
+    html: `
+      <h3>La Aventura Original</h3>
+      <p>Adaptación a <b>ngPAWS</b> de la aventura original de <b>Aventuras AD</b>
+      (versión reducida de <i>Advent</i>), publicada en 1989.</p>
+
+      <h3>Créditos originales</h3>
+      <ul>
+        <li><b>Dirección:</b> Andrés Samudio</li>
+        <li><b>Programación:</b> Manuel González</li>
+        <li><b>Gráficos:</b> Carlos Marqués</li>
+      </ul>
+
+      <h3>Adaptación</h3>
+      <ul>
+        <li><b>ngPAWS:</b> CiberSheep</li>
+        <li><b>Betatesting:</b> Uto, I. Cabanillas, Baltasar el Arquero</li>
+      </ul>
+
+      <h3>Edición móvil</h3>
+      <p>Versión editada, corregida y adaptada a dispositivos móviles por
+      <b>Jim Raynor · Jim88.de</b>.</p>
+      <p style="color:#888;font-size:.85em">
+        Nueva barra de botones a dos filas, autoguardado periódico,
+        gestión de partidas sin <code>prompt()</code>, exportación/importación
+        en JSON y funcionamiento offline vía Service Worker.
+      </p>
+
+      <h3>Apoya el proyecto</h3>
+      <p>Si te ha gustado, puedes <b>invitarme a un café</b> por:</p>
+      <ul>
+        <li><b>PayPal</b> — https://pay.jim88.de</li>
+        <li><b>Bitcoin Lightning</b> — envío instantáneo y sin comisiones altas.</li>
+      </ul>
+      <p>Dirección Lightning:</p>
+      <p><code>jimraynor@bitrefill.me</code></p>
+
+      <h3>Tecnología</h3>
+      <p>Motor <b>ngPAWS</b> (C) Carlos Sánchez, MIT.<br>
+      Sonido <b>buzz.js</b> (C) Jay Salvat, MIT.<br>
+      <b>jQuery</b> (C) jQuery Foundation, MIT.</p>
+
+      <h3>Offline</h3>
+      <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
+    `
+  };
+}
 
   // =========================================================
   //  BOTÓN FLOTANTE + ATAJOS
