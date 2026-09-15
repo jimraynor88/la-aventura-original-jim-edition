@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>La Aventura Original</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#000000">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Aventura">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="dat/intro.png">
+<link href="css.css" rel="stylesheet" type="text/css" />
+<style>
+:root { --game-fs: 1; --ui-fs: 1; --ui-base: 13px; }
+body { font-size: calc(120% * var(--game-fs)) !important; }
+@media (max-width: 1024px) { body { font-size: calc(150% * var(--game-fs)) !important; } }
+
+#ng-btn-menu {
+  position: fixed; top: 8px; right: 8px;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 17px; line-height: 1; cursor: pointer;
+  z-index: 1400; transition: background .15s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(6px); padding: 0;
+}
+#ng-btn-menu:hover  { background: rgba(43,108,176,.85); }
+#ng-btn-menu:active { transform: scale(.92); }
+
+#ng-quickbar {
+  position: absolute;
+  bottom: 8%;
+  left: 0; right: 0;
+  height: 40px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  background: rgba(0,0,0,.75);
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  font-size: 13px;
+  font-family: Verdana, sans-serif;
+  z-index: 100;
+  display: none;
+  -webkit-overflow-scrolling: touch;
+}
+#ng-quickbar.on { display: block; }
+#ng-quickbar::-webkit-scrollbar { height: 0; }
+.ng-qb-btn {
+  display: inline-block;
+  height: 30px;
+  padding: 0 10px;
+  margin-right: 4px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #1a1a1a; color: #eaeaea;
+  font-size: 12px; font-family: inherit;
+  cursor: pointer; line-height: 28px;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+}
+.ng-qb-btn:hover  { background: #2b6cb0; border-color: #2b6cb0; }
+.ng-qb-btn:active { transform: scale(.95); }
+
+#ng-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  display: none; align-items: center; justify-content: center;
+  z-index: 2000; padding: 8px; box-sizing: border-box;
+  font-family: Verdana, arial, helvetica, sans-serif;
+  font-size: calc(var(--ui-base) * var(--ui-fs));
+  color: #e8e8e8; line-height: 1.4;
+}
+#ng-modal.open { display: flex; }
+#ng-modal-box {
+  background: #131313; border: 1px solid #2a2a2a; border-radius: 11px;
+  width: 100%; max-width: 400px; max-height: 92vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0,0,0,.7); overflow: hidden;
+}
+#ng-modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px 8px 6px;
+  border-bottom: 1px solid #242424; background: #161616;
+}
+#ng-modal-head > div { display: flex; align-items: center; min-width: 0; }
+#ng-modal-title {
+  font-weight: 600; font-size: 1em; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#ng-modal-back {
+  background: none; border: none; color: #8ab4f8;
+  font-size: 1.4em; line-height: 1; cursor: pointer;
+  padding: 2px 8px 4px 6px; display: none;
+  -webkit-tap-highlight-color: transparent;
+}
+#ng-modal-back.visible { display: inline-block; }
+#ng-modal-x {
+  background: none; border: none; color: #999;
+  font-size: 1.15em; line-height: 1; cursor: pointer;
+  padding: 4px 8px; -webkit-tap-highlight-color: transparent;
+}
+#ng-modal-x:hover { color: #fff; }
+#ng-modal-body {
+  padding: 10px 12px 14px; overflow-y: auto; flex: 1;
+  -webkit-overflow-scrolling: touch;
+}
+#ng-modal-body h3 {
+  margin: 2px 0 8px; font-size: .72em;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: #6e6e6e; font-weight: 600;
+  border-bottom: 1px solid #242424; padding-bottom: 4px;
+}
+#ng-modal-body h3:not(:first-child) { margin-top: 16px; }
+#ng-modal-body p  { margin: 5px 0; font-size: .92em; }
+#ng-modal-body ul { margin: 4px 0 4px 16px; padding: 0; font-size: .92em; }
+#ng-modal-body li { margin: 3px 0; }
+#ng-modal-body code {
+  background: #242424; padding: 1px 5px; border-radius: 3px;
+  font-family: ui-monospace, monospace; font-size: .9em; color: #ffd580;
+}
+.ng-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 11px; border-radius: 8px;
+  background: #1b1b1b; border: 1px solid #262626;
+  margin-bottom: 5px; cursor: pointer; user-select: none;
+  transition: background .12s, border-color .12s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ng-item:hover  { background: #232323; border-color: #333; }
+.ng-item:active { transform: scale(.985); }
+.ng-item .ng-ico { font-size: 1.25em; width: 1.5em; text-align: center; flex-shrink: 0; }
+.ng-item .ng-txt { flex: 1; min-width: 0; }
+.ng-item .ng-txt b { display: block; font-weight: 600; color: #fff; font-size: .95em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ng-item .ng-txt small { display: block; color: #888; font-size: .8em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ng-item .ng-arrow { color: #555; font-size: 1.1em; flex-shrink: 0; }
+.ng-btn {
+  padding: 7px 12px; border-radius: 7px;
+  border: 1px solid #383838; background: #1e1e1e; color: #eee;
+  cursor: pointer; font-size: .88em; font-family: inherit;
+  transition: background .12s, border-color .12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ng-btn:hover  { background: #282828; border-color: #444; }
+.ng-btn:active { transform: scale(.97); }
+.ng-btn.primary { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
+.ng-btn.primary:hover { background: #377cc0; }
+.ng-btn.danger { background: #7a1f1f; border-color: #7a1f1f; color: #fff; }
+.ng-btn.danger:hover { background: #a12a2a; }
+.ng-btn.mini { padding: 4px 9px; font-size: .78em; }
+.ng-input {
+  width: 100%; box-sizing: border-box; padding: 9px 11px;
+  border-radius: 7px; border: 1px solid #383838;
+  background: #0b0b0b; color: #fff;
+  font-size: .95em; outline: none; font-family: inherit;
+}
+.ng-input:focus { border-color: #2b6cb0; }
+.ng-hint { font-size: .78em; color: #777; margin: 6px 0 12px; }
+.ng-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; background: #1a1a1a;
+  border: 1px solid #242424; border-radius: 7px;
+  margin-bottom: 5px; flex-wrap: wrap;
+}
+.ng-row .ng-row-name { flex: 1; min-width: 100px;
+  font-weight: 600; font-size: .9em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ng-row .ng-row-meta { font-size: .72em; color: #7d7d7d; white-space: nowrap; }
+.ng-row .ng-row-actions { display: flex; gap: 5px; }
+.ng-slider-row { display: flex; align-items: center; gap: 10px; padding: 6px 0 12px; }
+.ng-slider-row input[type=range] { flex: 1; accent-color: #2b6cb0; min-width: 0; }
+.ng-slider-val { min-width: 44px; text-align: right; color: #bbb; font-size: .82em;
+  font-variant-numeric: tabular-nums; }
+.ng-map-wrap { overflow: auto; -webkit-overflow-scrolling: touch;
+  background: #0a0a0a; border: 1px solid #242424; border-radius: 8px;
+  padding: 6px; max-height: 60vh; }
+.ng-toast {
+  position: fixed; left: 50%; bottom: 20px;
+  transform: translate(-50%, 16px);
+  background: rgba(20,20,20,.96); color: #fff;
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid #333; font-family: Verdana, sans-serif;
+  font-size: 13px; opacity: 0;
+  transition: opacity .25s, transform .25s;
+  z-index: 2100; pointer-events: none;
+  white-space: nowrap; max-width: 88vw;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.ng-toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<div class='wrapper'>
+  <div class='graphics'></div>
+  <div aria-live="polite" class='text'></div>
+  <div class='input'>
+    <input aria-live="polite" type='text' class='prompt' />
+  </div>
+</div>
+<div class='block_layer'>
+  <div class='block_graphics'></div>
+  <div class='block_text'></div>
+</div>
+<div class='transcript_layer'>
+  <span id='transcript_area'></span>
+</div>
+<div class='anykey_layer'></div>
+
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="buzz.js"></script>
+<script type='text/javascript' src='code.js'></script>
+
+<script>
+(function () {
+  'use strict';
+
+  // =========================================================
+  //  FIX: alias del recurso 1 → dat/intro.png
+  // =========================================================
+  try {
+    if (typeof resources !== 'undefined' && Array.isArray(resources)) {
+      const yaExiste = resources.some(r => r[0] === 1 && r[1] === 1);
+      if (!yaExiste) resources.push([1, 1, 'dat/intro.png']);
+    }
+  } catch (_) {}
+
+  // =========================================================
+  //  FIX: limpiar caracteres de control PAWS (SOH = \x01)
+  // =========================================================
+  if (typeof window.filterText === 'function') {
+    const _filterText_orig = window.filterText;
+    window.filterText = function (text) {
+      if (typeof text === 'string') {
+        text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+      }
+      return _filterText_orig(text);
+    };
+  }
+
+  // =========================================================
+  //  UTILIDADES
+  // =========================================================
+  const PREFIX       = 'ngpaws_savegame_';
+  const LAST         = 'ngpaws_last_save_name';
+  const SETTINGS_KEY = 'ngpaws_settings';
+  const VISITED_KEY  = 'ngpaws_visited';
+  const AUTO_SLOT    = '__AUTO__';
+  const AUTO_EVERY   = 20;
+
+  const $ = sel => document.querySelector(sel);
+  const esc = s => String(s).replace(/[&<>"']/g,
+    c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+  function toast(msg) {
+    const el = document.createElement('div');
+    el.className = 'ng-toast';
+    el.textContent = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.classList.add('show'), 10);
+    setTimeout(() => {
+      el.classList.remove('show');
+      setTimeout(() => el.remove(), 300);
+    }, 2000);
+  }
+
+  function listSaves() {
+    const out = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key.startsWith(PREFIX)) continue;
+      const name = key.slice(PREFIX.length);
+      let date = '', loc = '', auto = false;
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (data.__savedAt) {
+          const d = new Date(data.__savedAt);
+          date = d.toLocaleDateString() + ' ' +
+                 d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        if (data.flags && typeof data.flags[38] === 'number') loc = '📍 ' + data.flags[38];
+        if (data.__auto || name === AUTO_SLOT) auto = true;
+      } catch (_) {}
+      out.push({ name, date, loc, auto });
+    }
+    out.sort((a, b) => {
+      if (a.auto && !b.auto) return -1;
+      if (!a.auto && b.auto) return 1;
+      return a.name.localeCompare(b.name, 'es', { numeric: true });
+    });
+    return out;
+  }
+
+  function nextDefaultName() {
+    const saves = listSaves().filter(s => !s.auto);
+    let n = 1;
+    while (saves.some(s => s.name === 'Partida ' + n)) n++;
+    return 'Partida ' + n;
+  }
+
+  function saveName(name)  { return (name || '').trim().toUpperCase(); }
+  function doLocalSave(name, extra) {
+    const key = saveName(name);
+    if (!key) return false;
+    const obj = window.getSaveGameObject();
+    obj.__savedAt = Date.now();
+    if (extra) Object.assign(obj, extra);
+    localStorage.setItem(PREFIX + key, JSON.stringify(obj));
+    if (key !== AUTO_SLOT) localStorage.setItem(LAST, key);
+    return true;
+  }
+
+  function canSendCommand() {
+    return !(
+      window.inAnykey ||
+      window.inBlock ||
+      window.inQUIT ||
+      window.inEND   ||
+      window.inGetkey ||
+      window.inAsk ||
+      window.inPause
+    );
+  }
+
+  // =========================================================
+  //  AJUSTES
+  // =========================================================
+  function loadSettings() {
+    try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; }
+    catch (_) { return {}; }
+  }
+  function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+  let settings = loadSettings();
+
+  function applySettings() {
+    document.documentElement.style.setProperty('--game-fs', settings.fontScale || 1);
+    document.documentElement.style.setProperty('--ui-fs',   settings.uiScale   || 1);
+    if (typeof window.ACCsound === 'function') {
+      window.ACCsound(settings.sound === false ? 0 : 1);
+    }
+    if (typeof window.ACCgraphic === 'function') {
+      window.ACCgraphic(settings.graphics === false ? 0 : 1);
+    }
+    const qb = $('#ng-quickbar');
+    if (qb) qb.classList.toggle('on', settings.quickbar !== false);
+  }
+
+  // =========================================================
+  //  VISITADOS (para el mapa)
+  // =========================================================
+  function getVisitedSet() {
+    try { return new Set(JSON.parse(localStorage.getItem(VISITED_KEY)) || []); }
+    catch (_) { return new Set(); }
+  }
+  function saveVisitedSet(set) {
+    localStorage.setItem(VISITED_KEY, JSON.stringify([...set]));
+  }
+  function markVisited(locno) {
+    if (typeof locno !== 'number' || locno < 3) return;
+    const v = getVisitedSet();
+    if (!v.has(locno)) { v.add(locno); saveVisitedSet(v); }
+  }
+
+  // Hook: marca visita cada vez que se dibuja una localidad
+  (function () {
+    const _dp = window.drawPicture;
+    if (typeof _dp === 'function') {
+      window.drawPicture = function () {
+        markVisited(window.getFlag(38));
+        return _dp.apply(this, arguments);
+      };
+    }
+    const _ag = window.ACCgoto;
+    if (typeof _ag === 'function') {
+      window.ACCgoto = function (locno) {
+        const r = _ag.apply(this, arguments);
+        markVisited(locno);
+        return r;
+      };
+    }
+  })();
+
+  // =========================================================
+  //  AUTOGUARDADO
+  // =========================================================
+  let lastAutosaveTurn = -1;
+  function tryAutosave() {
+    if (settings.autosave === false) return;
+    if (typeof window.getSaveGameObject !== 'function') return;
+    const t = window.getFlag(31) + 256 * window.getFlag(32);
+    if (!t || t === lastAutosaveTurn) return;
+    if (t % AUTO_EVERY !== 0) return;
+    lastAutosaveTurn = t;
+    try { doLocalSave(AUTO_SLOT, { __auto: true }); } catch (_) {}
+  }
+
+  (function () {
+    const _fi = window.focusInput;
+    if (typeof _fi === 'function') {
+      window.focusInput = function () {
+        tryAutosave();
+        return _fi.apply(this, arguments);
+      };
+    }
+  })();
+
+  // =========================================================
+  //  BARRA RÁPIDA
+  // =========================================================
+  function addQuickBar() {
+    if ($('#ng-quickbar')) return;
+    const bar = document.createElement('div');
+    bar.id = 'ng-quickbar';
+    const cmds = [
+      ['MIRAR',  'MIRAR'],
+      ['INV',    'INVENTARIO'],
+      ['SALIDAS','SALIDAS'],
+      ['N',  'N'], ['S',  'S'], ['E',  'E'], ['O',  'O'],
+      ['NE', 'NE'], ['NO', 'NO'], ['SE', 'SE'], ['SO', 'SO'],
+      ['↑',  'ARRIBA'], ['↓', 'ABAJO'],
+      ['ENT', 'ENTRAR'], ['SAL', 'SALIR'],
+    ];
+    bar.innerHTML = cmds.map(([label, cmd]) =>
+      `<button class="ng-qb-btn" data-cmd="${cmd}">${label}</button>`
+    ).join('');
+    document.body.appendChild(bar);
+
+    bar.addEventListener('click', e => {
+      const btn = e.target.closest('.ng-qb-btn');
+      if (!btn) return;
+      if (!canSendCommand()) return;
+      const cmd = btn.dataset.cmd;
+      try { window.orderEnteredLoop(cmd); } catch (err) {
+        console.warn('Quickbar:', err);
+      }
+    });
+  }
+
+  // =========================================================
+  //  MODAL (sistema de vistas con pila)
+  // =========================================================
+  const viewStack = [];
+
+  function ensureModal() {
+    if ($('#ng-modal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'ng-modal';
+    modal.innerHTML = `
+      <div id="ng-modal-box">
+        <div id="ng-modal-head">
+          <div>
+            <button id="ng-modal-back" title="Atrás">‹</button>
+            <span id="ng-modal-title"></span>
+          </div>
+          <button id="ng-modal-x" title="Cerrar">✕</button>
+        </div>
+        <div id="ng-modal-body"></div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    $('#ng-modal-x').addEventListener('click', closeModal);
+    $('#ng-modal-back').addEventListener('click', popView);
+  }
+
+  function setView(view)      { viewStack.push(view); renderTop(); }
+  function pushView(view)     { setView(view); }
+  function replaceView(view)  { viewStack.pop(); setView(view); }
+  function popView() {
+    if (viewStack.length > 1) { viewStack.pop(); renderTop(); }
+    else closeModal();
+  }
+  function renderTop() {
+    const v = viewStack[viewStack.length - 1];
+    if (!v) return;
+    $('#ng-modal-title').textContent = v.title || '';
+    $('#ng-modal-body').innerHTML = v.html || '';
+    $('#ng-modal-back').classList.toggle('visible', viewStack.length > 1);
+    $('#ng-modal-body').scrollTop = 0;
+    if (typeof v.onMount === 'function') v.onMount();
+  }
+  function openModal(rootView) {
+    ensureModal();
+    viewStack.length = 0;
+    setView(rootView);
+    $('#ng-modal').classList.add('open');
+  }
+  function closeModal() {
+    viewStack.length = 0;
+    const m = $('#ng-modal');
+    if (m) m.classList.remove('open');
+  }
+
+  function item(icon, title, sub, id) {
+    return `<div class="ng-item" id="${id}" data-act="${id}">
+      <div class="ng-ico">${icon}</div>
+      <div class="ng-txt">
+        <b>${esc(title)}</b>
+        ${sub ? `<small>${esc(sub)}</small>` : ''}
+      </div>
+      <div class="ng-arrow">›</div>
+    </div>`;
+  }
+  function bindItems(map) {
+    $('#ng-modal-body').querySelectorAll('.ng-item').forEach(el => {
+      const act = el.dataset.act;
+      el.addEventListener('click', () => { if (map[act]) map[act](); });
+    });
+  }
+
+  // =========================================================
+  //  VISTA: MENÚ
+  // =========================================================
+  function viewMain() {
+    return {
+      title: 'Menú',
+      html: `
+        <h3>Partida</h3>
+        ${item('💾', 'Guardar',           'Crear o sobrescribir',              'save')}
+        ${item('📂', 'Cargar',            'Retomar una partida',               'load')}
+        ${item('🗺️', 'Mapa',              'Localidades visitadas',             'map')}
+        ${item('📤', 'Exportar / Importar','Guardar partidas en archivo',      'port')}
+        ${item('📄', 'Transcripción',     'Historial de la partida',           'trans')}
+        ${item('🔄', 'Reiniciar',         'Volver al principio',               'restart')}
+
+        <h3>Ajustes</h3>
+        ${item('🔠', 'Tamaño del juego',  'Texto de la aventura',              'font')}
+        ${item('🪟', 'Tamaño de menús',   'Interfaz y ventanas',               'ui')}
+        ${item('🎯', 'Barra rápida',      settings.quickbar !== false ? 'Visible' : 'Oculta', 'quickbar')}
+        ${item('💾', 'Autoguardado',      settings.autosave !== false
+              ? 'Cada ' + AUTO_EVERY + ' turnos' : 'Desactivado', 'autosave')}
+        ${item(settings.graphics === false ? '🚫' : '🖼️',
+               'Gráficos', settings.graphics === false ? 'Desactivados' : 'Activados', 'graphics')}
+        ${item('📡', 'Estado offline',    'Comprobar caché y modo sin conexión', 'offline')}
+
+        <h3>Ayuda</h3>
+        ${item('📖', 'Cómo jugar', 'Guía básica de la aventura', 'guide')}
+        ${item('⌨️', 'Comandos',   'Listado por categorías',     'cmds')}
+        ${item('ℹ️', 'Acerca de',  'Créditos e información',     'about')}
+      `,
+      onMount() {
+        bindItems({
+          save:     () => pushView(viewSave()),
+          load:     () => pushView(viewLoad()),
+          map:      () => pushView(viewMap()),
+          port:     () => pushView(viewPort()),
+          trans:    () => pushView(viewTranscript()),
+          restart:  () => pushView(viewRestart()),
+          font:     () => pushView(viewFont()),
+          ui:       () => pushView(viewUISize()),
+          quickbar: () => { toggleQuickbar(); replaceView(viewMain()); },
+          autosave: () => { toggleAutosave(); replaceView(viewMain()); },
+          graphics: () => { toggleGraphics(); replaceView(viewMain()); },
+          offline:  async () => pushView(await viewOffline()),
+          guide:    () => pushView(viewGuide()),
+          cmds:     () => pushView(viewCommands()),
+          about:    () => pushView(viewAbout()),
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: GUARDAR
+  // =========================================================
+  function viewSave() {
+    const last  = localStorage.getItem(LAST) || nextDefaultName();
+    const saves = listSaves().filter(s => !s.auto);
+    const rows  = saves.length
+      ? saves.map(s => `
+          <div class="ng-row">
+            <span class="ng-row-name">${esc(s.name)}</span>
+            <span class="ng-row-meta">${esc(s.date)} ${esc(s.loc)}</span>
+            <button class="ng-btn mini" data-fill="${esc(s.name)}">Usar</button>
+          </div>`).join('')
+      : '<p style="color:#888;text-align:center;font-style:italic">Aún no hay partidas guardadas.</p>';
+
+    return {
+      title: '💾 Guardar',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Escribe un nombre, o pulsa <b>Usar</b> en una existente para sobrescribirla.
+        </p>
+        <input id="ng-save-name" class="ng-input" type="text"
+               value="${esc(last)}" autocomplete="off" maxlength="40" />
+        <p class="ng-hint">Pulsa <b>Enter</b> para guardar al instante.</p>
+        <div style="display:flex;gap:6px;justify-content:flex-end;margin-bottom:14px">
+          <button id="ng-save-go" class="ng-btn primary">Guardar</button>
+        </div>
+        <h3>Partidas existentes</h3>
+        ${rows}
+      `,
+      onMount() {
+        const input = $('#ng-save-name');
+        const goBtn = $('#ng-save-go');
+        setTimeout(() => { input.focus(); input.select(); }, 30);
+        const doSave = () => {
+          const name = input.value.trim();
+          if (!name) { toast('Pon un nombre a la partida'); return; }
+          try {
+            doLocalSave(name);
+            toast('💾 Guardado: ' + saveName(name));
+            popView();
+          } catch (e) { toast('Error al guardar: ' + e.message); }
+        };
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+        });
+        goBtn.addEventListener('click', doSave);
+        $('#ng-modal-body').querySelectorAll('[data-fill]').forEach(b => {
+          b.addEventListener('click', () => {
+            input.value = b.dataset.fill;
+            input.focus(); input.select();
+          });
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: CARGAR
+  // =========================================================
+  function viewLoad() {
+    const saves = listSaves();
+    const rows  = saves.length
+      ? saves.map(s => {
+          const name = s.auto ? '🔄 Autoguardado' : s.name;
+          return `
+            <div class="ng-row">
+              <span class="ng-row-name">${esc(name)}</span>
+              <span class="ng-row-meta">${esc(s.date)} ${esc(s.loc)}</span>
+              <div class="ng-row-actions">
+                <button class="ng-btn primary mini" data-load="${esc(s.name)}">Cargar</button>
+                <button class="ng-btn danger mini"  data-del="${esc(s.name)}" title="Borrar">🗑️</button>
+              </div>
+            </div>`;
+        }).join('')
+      : '<p style="color:#888;text-align:center;font-style:italic">No hay partidas guardadas.</p>';
+
+    return {
+      title: '📂 Cargar',
+      html: `<h3>Selecciona una partida</h3>${rows}`,
+      onMount() {
+        $('#ng-modal-body').querySelectorAll('[data-load]').forEach(b => {
+          b.addEventListener('click', () => {
+            const name = b.dataset.load;
+            const json = localStorage.getItem(PREFIX + name);
+            if (!json) { toast('No encontrada'); return; }
+            try {
+              const obj = JSON.parse(json);
+              window.restoreSaveGameObject(obj);
+              closeModal();
+              if (typeof window.descriptionLoop === 'function') window.descriptionLoop();
+              toast('📂 Cargada: ' + (name === AUTO_SLOT ? 'Autoguardado' : name));
+            } catch (e) { toast('Error al cargar: ' + e.message); }
+          });
+        });
+        $('#ng-modal-body').querySelectorAll('[data-del]').forEach(b => {
+          b.addEventListener('click', () => {
+            const name = b.dataset.del;
+            if (!confirm('¿Borrar la partida «' + name + '»?')) return;
+            localStorage.removeItem(PREFIX + name);
+            if (localStorage.getItem(LAST) === name) localStorage.removeItem(LAST);
+            replaceView(viewLoad());
+            toast('🗑️ Borrada');
+          });
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: REINICIAR
+  // =========================================================
+  function viewRestart() {
+    return {
+      title: '🔄 Reiniciar',
+      html: `
+        <p>¿Seguro que quieres <b>reiniciar</b> la aventura?</p>
+        <p style="color:#888;font-size:.85em">
+          Perderás el progreso actual. Tus partidas guardadas se mantienen.
+        </p>
+        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+          <button id="ng-r-no"  class="ng-btn">Cancelar</button>
+          <button id="ng-r-yes" class="ng-btn danger">Reiniciar</button>
+        </div>
+      `,
+      onMount() {
+        $('#ng-r-no').addEventListener('click', popView);
+        $('#ng-r-yes').addEventListener('click', () => location.reload());
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: EXPORTAR / IMPORTAR
+  // =========================================================
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function exportSave(name) {
+    const json = localStorage.getItem(PREFIX + name);
+    if (!json) { toast('No encontrada'); return; }
+    const clean = name.replace(/[^\w\-]/g, '_') || 'partida';
+    downloadBlob(new Blob([json], { type: 'application/json' }), clean + '.json');
+    toast('📤 Exportada: ' + name);
+  }
+
+  function exportAll() {
+    const all = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k.startsWith(PREFIX)) continue;
+      try { all[k.slice(PREFIX.length)] = JSON.parse(localStorage.getItem(k)); } catch (_) {}
+    }
+    if (!Object.keys(all).length) { toast('No hay partidas'); return; }
+    downloadBlob(
+      new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' }),
+      'aventura-partidas.json'
+    );
+    toast('📤 Exportadas: ' + Object.keys(all).length);
+  }
+
+  function importSaves(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data || typeof data !== 'object') throw new Error('Formato inválido');
+        let count = 0;
+        if (data.flags && Array.isArray(data.flags)) {
+          // Una sola partida: usa el nombre del archivo
+          let name = file.name.replace(/\.json$/i, '').replace(/[^\w\- ]/g, '').trim();
+          if (!name) name = 'Importada';
+          localStorage.setItem(PREFIX + saveName(name), JSON.stringify(data));
+          count = 1;
+        } else {
+          // Varias partidas: cada clave es un nombre
+          for (const k in data) {
+            if (data[k] && data[k].flags && Array.isArray(data[k].flags)) {
+              localStorage.setItem(PREFIX + saveName(k), JSON.stringify(data[k]));
+              count++;
+            }
+          }
+        }
+        if (!count) throw new Error('No se encontraron partidas en el archivo');
+        toast('📥 Importadas: ' + count);
+        replaceView(viewLoad());
+      } catch (err) {
+        toast('Error al importar: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function viewPort() {
+    const saves = listSaves();
+    const rows = saves.map(s => `
+      <div class="ng-row">
+        <span class="ng-row-name">${esc(s.auto ? '🔄 Autoguardado' : s.name)}</span>
+        <span class="ng-row-meta">${esc(s.date)}</span>
+        <button class="ng-btn mini" data-exp="${esc(s.name)}">Exportar</button>
+      </div>`).join('') ||
+      '<p style="color:#888;text-align:center;font-style:italic">No hay partidas.</p>';
+
+    return {
+      title: '📤 Exportar / Importar',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Las partidas se guardan como archivo <code>.json</code>.
+          Útil para hacer copias de seguridad o pasarlas a otro dispositivo.
+        </p>
+
+        <h3>Importar</h3>
+        <p style="color:#888;font-size:.85em">
+          Selecciona un archivo <code>.json</code> exportado antes.
+          Si tiene varias partidas, se importan todas.
+        </p>
+        <input id="ng-imp-file" type="file" accept=".json,application/json"
+               style="display:none" />
+        <div style="display:flex;gap:6px;margin-top:8px;margin-bottom:12px">
+          <button id="ng-imp-btn" class="ng-btn primary">📥 Elegir archivo...</button>
+        </div>
+
+        <h3>Exportar todas</h3>
+        <div style="display:flex;gap:6px;margin-top:8px;margin-bottom:12px">
+          <button id="ng-exp-all" class="ng-btn primary">📦 Exportar todas (${saves.length})</button>
+        </div>
+
+        <h3>Exportar una</h3>
+        ${rows}
+      `,
+      onMount() {
+        $('#ng-imp-btn').addEventListener('click', () => $('#ng-imp-file').click());
+        $('#ng-imp-file').addEventListener('change', e => {
+          const f = e.target.files && e.target.files[0];
+          if (f) importSaves(f);
+        });
+        $('#ng-exp-all').addEventListener('click', exportAll);
+        $('#ng-modal-body').querySelectorAll('[data-exp]').forEach(b => {
+          b.addEventListener('click', () => exportSave(b.dataset.exp));
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: TRANSCRIPCIÓN
+  // =========================================================
+  function getTranscriptText() {
+    const el = document.querySelector('.text');
+    if (!el) return '';
+    return el.innerText || el.textContent || '';
+  }
+
+  function viewTranscript() {
+    return {
+      title: '📄 Transcripción',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Guarda el historial de lo que ha ido pasando en la partida.
+          Muy útil para compartir en foros o pedir ayuda.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:12px">
+          <button id="ng-tr-copy" class="ng-btn primary">📋 Copiar al portapapeles</button>
+          <button id="ng-tr-dl"   class="ng-btn primary">💾 Descargar como .txt</button>
+        </div>
+        <h3>Vista previa</h3>
+        <pre id="ng-tr-prev" style="background:#0b0b0b;border:1px solid #242424;
+             border-radius:6px;padding:8px;font-size:.75em;color:#ccc;
+             white-space:pre-wrap;word-break:break-word;max-height:30vh;overflow:auto;
+             font-family:ui-monospace,monospace">${esc(getTranscriptText().slice(-2000))}</pre>
+      `,
+      onMount() {
+        $('#ng-tr-copy').addEventListener('click', async () => {
+          const txt = getTranscriptText();
+          if (!txt) { toast('Nada que copiar'); return; }
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(txt);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy');
+              ta.remove();
+            }
+            toast('📋 Copiada al portapapeles');
+          } catch (err) { toast('No se pudo copiar'); }
+        });
+        $('#ng-tr-dl').addEventListener('click', () => {
+          const txt = getTranscriptText();
+          if (!txt) { toast('Nada que descargar'); return; }
+          const d = new Date().toISOString().slice(0,19).replace(/[:T]/g, '-');
+          downloadBlob(new Blob([txt], { type: 'text/plain;charset=utf-8' }),
+                       'aventura-' + d + '.txt');
+          toast('💾 Descargada');
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: MAPA
+  // =========================================================
+  const DIR_OFFSET = {
+    2: [0, -1],   // N
+    3: [0,  1],   // S
+    4: [1,  0],   // E
+    5: [-1, 0],   // O
+    6: [1, -1],   // NE
+    7: [-1,-1],   // NO
+    8: [1,  1],   // SE
+    9: [-1, 1],   // SO
+  };
+
+  function buildMapData() {
+    const visited = getVisitedSet();
+    const conns = window.connections;
+    if (!conns) return { coords: {}, visited };
+    const current = window.getFlag(38);
+    const coords = {};
+    coords[current] = { x: 0, y: 0 };
+    const queue = [current];
+    const seen = new Set([current]);
+    while (queue.length) {
+      const loc = queue.shift();
+      const c = conns[loc] || [];
+      for (let dir = 2; dir <= 9; dir++) {
+        const dest = c[dir];
+        if (typeof dest !== 'number' || dest < 0) continue;
+        if (seen.has(dest)) continue;
+        const off = DIR_OFFSET[dir];
+        if (!off) continue;
+        coords[dest] = { x: coords[loc].x + off[0], y: coords[loc].y + off[1] };
+        seen.add(dest);
+        queue.push(dest);
+      }
+    }
+    return { coords, visited, current };
+  }
+
+  function renderMapSVG() {
+    const { coords, visited, current } = buildMapData();
+    const keys = Object.keys(coords).filter(l => visited.has(Number(l)));
+    if (!keys.length) return '<p style="color:#888;text-align:center;padding:20px">Aún no has explorado nada.</p>';
+
+    const CELL = 56, PAD = 24;
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    keys.forEach(l => {
+      const c = coords[l];
+      minX = Math.min(minX, c.x); maxX = Math.max(maxX, c.x);
+      minY = Math.min(minY, c.y); maxY = Math.max(maxY, c.y);
+    });
+    const W = (maxX - minX + 1) * CELL + PAD * 2;
+    const H = (maxY - minY + 1) * CELL + PAD * 2;
+
+    const pos = l => ({
+      x: PAD + (coords[l].x - minX + 0.5) * CELL,
+      y: PAD + (coords[l].y - minY + 0.5) * CELL
+    });
+
+    let lines = '';
+    keys.forEach(l => {
+      const c = window.connections[Number(l)] || [];
+      for (let dir = 2; dir <= 9; dir++) {
+        const dest = c[dir];
+        if (!coords[dest] || !visited.has(dest)) continue;
+        if (Number(l) >= dest) continue;
+        const a = pos(l), b = pos(dest);
+        lines += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"
+                  stroke="#3a3a3a" stroke-width="2"/>`;
+      }
+    });
+
+    let circles = '';
+    keys.forEach(l => {
+      const p = pos(l);
+      const isCurrent = Number(l) === current;
+      const fill   = isCurrent ? '#2b6cb0' : '#1e1e1e';
+      const stroke = isCurrent ? '#8ab4f8' : '#555';
+      circles += `<circle cx="${p.x}" cy="${p.y}" r="${isCurrent ? 13 : 10}"
+                  fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+      circles += `<text x="${p.x}" y="${p.y + 3.5}" text-anchor="middle"
+                  font-size="9" fill="#fff" font-family="monospace">${l}</text>`;
+    });
+
+    return `<svg xmlns="http://www.w3.org/2000/svg"
+              width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+              ${lines}${circles}
+            </svg>`;
+  }
+
+  function viewMap() {
+    const visited = getVisitedSet();
+    return {
+      title: '🗺️ Mapa',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Cada círculo es una localidad. El azul es donde estás ahora.
+          El número es el identificador interno de la localidad.
+        </p>
+        <p style="color:#888;font-size:.82em">
+          Exploradas: <b>${visited.size}</b> localidades.
+        </p>
+        <div class="ng-map-wrap">
+          ${renderMapSVG()}
+        </div>
+        <div style="display:flex;gap:6px;margin-top:12px;justify-content:flex-end">
+          <button id="ng-map-clear" class="ng-btn danger">🗑️ Reiniciar mapa</button>
+        </div>
+      `,
+      onMount() {
+        $('#ng-map-clear').addEventListener('click', () => {
+          if (!confirm('¿Borrar el progreso del mapa?')) return;
+          localStorage.removeItem(VISITED_KEY);
+          replaceView(viewMap());
+          toast('Mapa reiniciado');
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTAS: AJUSTES
+  // =========================================================
+  function viewFont() {
+    const pct = Math.round((settings.fontScale || 1) * 100);
+    return {
+      title: '🔠 Tamaño del juego',
+      html: `
+        <p style="color:#aaa;font-size:.88em">Ajusta el tamaño del texto de la aventura.</p>
+        <div class="ng-slider-row">
+          <span style="color:#666;font-size:.8em">Aa</span>
+          <input id="ng-fr" type="range" min="30" max="250" step="5" value="${pct}" />
+          <span style="color:#ccc;font-size:1.4em">Aa</span>
+        </div>
+        <div class="ng-slider-row" style="padding-top:0">
+          <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
+          <span id="ng-fv" class="ng-slider-val" style="min-width:60px">${pct}%</span>
+        </div>
+        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
+          <button id="ng-f-reset" class="ng-btn">100 %</button>
+          <button id="ng-f-ok"    class="ng-btn primary">Aplicar</button>
+        </div>
+      `,
+      onMount() {
+        const range = $('#ng-fr'), val = $('#ng-fv');
+        range.addEventListener('input', () => {
+          val.textContent = range.value + '%';
+          document.documentElement.style.setProperty('--game-fs', range.value / 100);
+        });
+        $('#ng-f-reset').addEventListener('click', () => {
+          range.value = 100; val.textContent = '100%';
+          document.documentElement.style.setProperty('--game-fs', 1);
+        });
+        $('#ng-f-ok').addEventListener('click', () => {
+          settings.fontScale = range.value / 100;
+          saveSettings(settings); applySettings();
+          toast('Fuente aplicada'); popView();
+        });
+      }
+    };
+  }
+
+  function viewUISize() {
+    const pct = Math.round((settings.uiScale || 1) * 100);
+    return {
+      title: '🪟 Tamaño de menús',
+      html: `
+        <p style="color:#aaa;font-size:.88em">
+          Ajusta el tamaño de esta interfaz (menús, guía, ventanas).
+          No afecta al texto de la aventura.
+        </p>
+        <div class="ng-slider-row">
+          <span style="color:#666;font-size:.8em">Aa</span>
+          <input id="ng-ur" type="range" min="70" max="150" step="5" value="${pct}" />
+          <span style="color:#ccc;font-size:1.4em">Aa</span>
+        </div>
+        <div class="ng-slider-row" style="padding-top:0">
+          <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
+          <span id="ng-uv" class="ng-slider-val" style="min-width:60px">${pct}%</span>
+        </div>
+        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
+          <button id="ng-u-reset" class="ng-btn">100 %</button>
+          <button id="ng-u-ok"    class="ng-btn primary">Aplicar</button>
+        </div>
+      `,
+      onMount() {
+        const range = $('#ng-ur'), val = $('#ng-uv');
+        range.addEventListener('input', () => {
+          val.textContent = range.value + '%';
+          document.documentElement.style.setProperty('--ui-fs', range.value / 100);
+        });
+        $('#ng-u-reset').addEventListener('click', () => {
+          range.value = 100; val.textContent = '100%';
+          document.documentElement.style.setProperty('--ui-fs', 1);
+        });
+        $('#ng-u-ok').addEventListener('click', () => {
+          settings.uiScale = range.value / 100;
+          saveSettings(settings); applySettings();
+          toast('Interfaz ajustada'); popView();
+        });
+      }
+    };
+  }
+
+  function toggleQuickbar() {
+    settings.quickbar = settings.quickbar === false ? true : false;
+    saveSettings(settings); applySettings();
+    toast(settings.quickbar === false ? '🎯 Barra rápida oculta' : '🎯 Barra rápida visible');
+  }
+  function toggleAutosave() {
+    settings.autosave = settings.autosave === false ? true : false;
+    saveSettings(settings);
+    toast(settings.autosave === false ? '💾 Autoguardado off' : '💾 Autoguardado cada ' + AUTO_EVERY + ' turnos');
+  }
+  function toggleGraphics() {
+    settings.graphics = settings.graphics === false ? true : false;
+    saveSettings(settings); applySettings();
+    toast(settings.graphics === false ? '🚫 Gráficos desactivados' : '🖼️ Gráficos activados');
+  }
+
+  // =========================================================
+  //  VISTA: ESTADO OFFLINE
+  // =========================================================
+  async function viewOffline() {
+    let swSupported = ('serviceWorker' in navigator);
+    let swReg = null, swActive = false, swController = false;
+    let cacheName = null, cacheCount = 0, error = null;
+    try {
+      if (swSupported) {
+        swReg = await navigator.serviceWorker.getRegistration();
+        if (swReg) {
+          swActive = !!swReg.active;
+          swController = !!navigator.serviceWorker.controller;
+        }
+      }
+      const names = await caches.keys();
+      for (const name of names) {
+        if (!name.startsWith('aventura')) continue;
+        const c = await caches.open(name);
+        const keys = await c.keys();
+        if (keys.length > cacheCount) { cacheName = name; cacheCount = keys.length; }
+      }
+    } catch (e) { error = e.message; }
+
+    const row = (label, value, ok) =>
+      `<div class="ng-row">
+         <span class="ng-row-name">${esc(label)}</span>
+         <span class="ng-row-meta" style="color:${ok === false ? '#e88' : ok === true ? '#8d8' : '#ccc'}">
+           ${esc(value)}
+         </span>
+       </div>`;
+
+    return {
+      title: '📡 Estado offline',
+      html: `
+        <p style="color:#aaa;font-size:.88em">Comprueba si la app está lista para funcionar sin conexión.</p>
+        <h3>Servicio offline (SW)</h3>
+        ${row('Soportado',    swSupported ? '✅ Sí' : '❌ No', swSupported)}
+        ${row('Registrado',   swReg ? '✅ Sí' : '❌ No', !!swReg)}
+        ${row('Activo',       swActive ? '✅ Sí' : '❌ No', swActive)}
+        ${row('Controlando',  swController ? '✅ Sí' : '⚠️ Recarga', swController)}
+        <h3>Archivos en caché</h3>
+        ${row(cacheName || '(ninguno)', cacheCount + ' archivos', cacheCount > 30)}
+        ${error ? `<h3>Errores</h3><p style="color:#f88;font-size:.85em">${esc(error)}</p>` : ''}
+        <h3>Acciones</h3>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+          <button id="ng-ck-recheck" class="ng-btn">🔁 Volver a comprobar</button>
+          <button id="ng-ck-force"   class="ng-btn primary">⬇️ Forzar re-descarga de todo</button>
+          <button id="ng-ck-clear"   class="ng-btn danger">🗑️ Borrar toda la caché</button>
+        </div>
+        <p style="color:#777;font-size:.8em;margin-top:16px">
+          <b>Controlando ⚠️</b> → cierra y reabre la app, o recarga.
+          Todo debería llegar a <b>~110 archivos</b>.
+        </p>
+      `,
+      onMount() {
+        $('#ng-ck-recheck').addEventListener('click', async () => replaceView(await viewOffline()));
+        $('#ng-ck-force').addEventListener('click', () => {
+          if (!navigator.serviceWorker.controller) { toast('Primero recarga la página'); return; }
+          navigator.serviceWorker.controller.postMessage('FORCE_RECACHE');
+          toast('Re-descargando caché...');
+        });
+        $('#ng-ck-clear').addEventListener('click', async () => {
+          if (!confirm('¿Borrar toda la caché?')) return;
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+          toast('Caché borrada. Cierra y reabre la app.');
+        });
+      }
+    };
+  }
+
+  // =========================================================
+  //  VISTA: CÓMO JUGAR
+  // =========================================================
+  function viewGuide() {
+    return {
+      title: '📖 Cómo jugar',
+      html: `
+        <p>Estás ante una <b>aventura conversacional</b>: te mueves escribiendo
+        órdenes como <code>ABRE PUERTA</code> o <code>COGE LLAVE</code>.</p>
+        <h3>Movimiento</h3>
+        <ul>
+          <li><code>N</code> <code>S</code> <code>E</code> <code>O</code> — Norte, Sur, Este, Oeste</li>
+          <li><code>NE</code> <code>NO</code> <code>SE</code> <code>SO</code> — Diagonales</li>
+          <li><code>ARRIBA</code> / <code>ABAJO</code>, <code>ENTRAR</code> / <code>SALIR</code></li>
+        </ul>
+        <p>Escribe <code>SALIDAS</code> (o <code>X</code>) para ver las salidas.</p>
+        <h3>Objetos</h3>
+        <ul>
+          <li><code>COGE LLAVE</code> — Coger</li>
+          <li><code>DEJA LLAVE</code> — Soltar</li>
+          <li><code>EXAMINA PUERTA</code> o <code>EX PUERTA</code> — Mirar</li>
+          <li><code>INVENTARIO</code> o <code>I</code> — Ver qué llevas</li>
+          <li><code>METE LLAVE EN CAJA</code> — Meter dentro</li>
+          <li><code>SACA LLAVE DE CAJA</code> — Sacar de dentro</li>
+        </ul>
+        <h3>Inventario</h3>
+        <p>Puedes llevar pocos objetos y tienes un peso máximo.</p>
+        <h3>Guardar y cargar</h3>
+        <p>Pulsa <b>☰</b> arriba a la derecha → <b>Guardar</b> o <b>Cargar</b>.
+        También funciona <code>GUARDAR</code> / <code>CARGAR</code> escritos.</p>
+        <h3>Consejos</h3>
+        <ul>
+          <li>Examina <b>todo</b>: muebles, paredes, letreros, el suelo...</li>
+          <li>Habla con personajes: <code>PREGUNTA A ENANO</code>, <code>DI HOLA</code>.</li>
+          <li>Deja objetos en sitios clave si te pesan demasiado.</li>
+          <li>Guarda antes de hacer algo arriesgado.</li>
+        </ul>
+      `
+    };
+  }
+
+  // =========================================================
+  //  VISTA: COMANDOS
+  // =========================================================
+  const COMMAND_CATEGORIES = [
+    { id:'mv', icon:'🧭', title:'Movimiento', sub:'Desplazarse por el mundo',
+      intro:'Usa puntos cardinales y direcciones espaciales.',
+      items:[
+        ['N, S, E, O','Norte, Sur, Este, Oeste'],
+        ['NE, NO, SE, SO','Diagonales'],
+        ['ARRIBA / ABAJO','Subir o bajar'],
+        ['ENTRAR / SALIR','Entrar o salir'],
+        ['SALIDAS (o X)','Ver las salidas disponibles'],
+      ]},
+    { id:'see', icon:'👁️', title:'Ver y examinar', sub:'Observar el entorno',
+      intro:'Comandos para mirar y descubrir detalles.',
+      items:[
+        ['MIRA / M','Ver descripción de la localidad'],
+        ['EXAMINA / EX','Mirar un objeto o personaje'],
+        ['EXAMINA DENTRO DE','Mirar dentro de un contenedor'],
+        ['BUSCA / REGISTRA','Buscar algo'],
+        ['LEE','Leer letrero, libro o papel'],
+        ['INVENTARIO / I','Ver qué llevas'],
+      ]},
+    { id:'obj', icon:'🎒', title:'Objetos', sub:'Coger, dejar, meter, sacar',
+      intro:'Manipulación básica del inventario.',
+      items:[
+        ['COGE / AGARRA','Coger un objeto'],
+        ['COGE TODO','Coger todo lo que haya'],
+        ['DEJA / SUELTA','Soltar'],
+        ['DEJA TODO','Soltar todo'],
+        ['TIRA / LANZA','Tirar o lanzar'],
+        ['METE / PON EN','Meter dentro'],
+        ['SACA / EXTRAE DE','Sacar de'],
+        ['PON / VISTE','Ponerte'],
+        ['QUITA / DESVISTE','Quitarte'],
+        ['USA X CON Y','Usar un objeto con otro'],
+      ]},
+    { id:'man', icon:'🔧', title:'Manipular', sub:'Acciones sobre objetos',
+      intro:'Comandos para modificar objetos.',
+      items:[
+        ['ABRE / CIERRA','Abrir o cerrar'],
+        ['EMPUJA','Empujar'],
+        ['TIRA DE','Tirar de'],
+        ['GIRA / ROTA','Girar'],
+        ['ROMPE / DESTRUYE','Romper'],
+        ['CORTA','Cortar'],
+        ['ATA / ANUDA','Atar'],
+        ['DESATA','Desatar'],
+        ['LLENA / VACÍA','Llenar o vaciar'],
+        ['ENCIENDE / APAGA','Encender o apagar'],
+      ]},
+    { id:'ppl', icon:'🗣️', title:'Personas', sub:'Interactuar con personajes',
+      intro:'Comandos para hablar y dar objetos.',
+      items:[
+        ['HABLA CON / DI A','Hablar con alguien'],
+        ['PREGUNTA A','Preguntar'],
+        ['RESPONDE','Responder'],
+        ['DA / OFRECE','Dar un objeto'],
+        ['ENSEÑA / MUESTRA','Mostrar'],
+        ['SALUDA','Saludar'],
+        ['BESA','Besar'],
+        ['ABRAZA','Abrazar'],
+        ['INSULTA','Insultar'],
+      ]},
+    { id:'sns', icon:'👂', title:'Sentidos', sub:'Oler, oír, tocar, probar',
+      intro:'Percibir el entorno.',
+      items:[
+        ['HUELE / OLFATEA','Oler'],
+        ['ESCUCHA / OYE','Escuchar'],
+        ['TOCA / PALPA','Tocar'],
+        ['PRUEBA / SABOREA','Probar'],
+        ['ACARICIA','Acariciar'],
+      ]},
+    { id:'exp', icon:'💃', title:'Expresiones', sub:'Emociones propias',
+      intro:'Cosas que hace el protagonista.',
+      items:[
+        ['GRITA / CHILLA','Gritar'],
+        ['LLORA','Llorar'],
+        ['CANTA','Cantar'],
+        ['BAILA','Bailar'],
+        ['REZA / ORA','Rezar'],
+        ['ESPERA / Z','Esperar'],
+        ['DUERME','Dormir'],
+        ['PIENSA','Pensar'],
+        ['SALTA / BRINCA','Saltar'],
+      ]},
+    { id:'sys', icon:'⚙️', title:'Sistema', sub:'Guardar, cargar, ayuda',
+      intro:'Comandos de gestión.',
+      items:[
+        ['GUARDAR','Guardar partida'],
+        ['CARGAR','Cargar partida'],
+        ['AYUDA','Consejos contextuales'],
+        ['VERSIÓN','Ver versión'],
+        ['FIN / SALIR','Abandonar'],
+      ]},
+    { id:'exa', icon:'💡', title:'Ejemplos', sub:'Frases completas',
+      intro:'Frases típicas que el juego entiende.',
+      items:[
+        ['COGE LA LLAVE','Coger con artículo'],
+        ['EXAMINA EL ÁRBOL','Mirar un objeto'],
+        ['MIRA DEBAJO DE LA MESA','Mirar en dirección'],
+        ['METE LA LLAVE EN LA CAJA','Meter en contenedor'],
+        ['SACA LA MONEDA DE LA BOTELLA','Sacar de contenedor'],
+        ['PREGUNTA AL ENANO POR SU CASA','Preguntar a NPC'],
+        ['DI HOLA AL ELFO','Hablar'],
+        ['DA LA TORTILLA AL OSO','Dar objeto'],
+        ['USA LA LLAVE CON LA PUERTA','Usar con'],
+      ]},
+  ];
+
+  function viewCommands() {
+    return {
+      title: '⌨️ Comandos',
+      html: `
+        <p style="color:#aaa;font-size:.88em">Elige una categoría.</p>
+        ${COMMAND_CATEGORIES.map(c => item(c.icon, c.title, c.sub, 'cat-' + c.id)).join('')}
+        <p style="color:#777;font-size:.8em;margin-top:14px">
+          El parser también acepta sinónimos y frases largas.
+        </p>
+      `,
+      onMount() {
+        const map = {};
+        COMMAND_CATEGORIES.forEach(c => {
+          map['cat-' + c.id] = () => pushView(viewCommandCategory(c));
+        });
+        bindItems(map);
+      }
+    };
+  }
+
+  function viewCommandCategory(cat) {
+    return {
+      title: cat.icon + ' ' + cat.title,
+      html: `
+        <p style="color:#aaa;font-size:.88em">${esc(cat.intro)}</p>
+        ${cat.items.map(([cmd, desc]) => `
+          <div class="ng-row">
+            <span class="ng-row-name"><code style="font-size:.92em">${esc(cmd)}</code></span>
+            <span class="ng-row-meta">${esc(desc)}</span>
+          </div>
+        `).join('')}
+      `
+    };
+  }
+
+  // =========================================================
+  //  VISTA: ACERCA DE
+  // =========================================================
+  function viewAbout() {
+    return {
+      title: 'ℹ️ Acerca de',
+      html: `
+        <h3>La Aventura Original</h3>
+        <p>Adaptación a <b>ngPAWS</b> de la aventura original de <b>Aventuras AD</b>
+        (versión reducida de <i>Advent</i>), publicada en 1989.</p>
+        <h3>Créditos originales</h3>
+        <ul>
+          <li><b>Dirección:</b> Andrés Samudio</li>
+          <li><b>Programación:</b> Manuel González</li>
+          <li><b>Gráficos:</b> Carlos Marqués</li>
+        </ul>
+        <h3>Adaptación</h3>
+        <ul>
+          <li><b>ngPAWS:</b> CiberSheep</li>
+          <li><b>Betatesting:</b> Uto, I. Cabanillas, Baltasar el Arquero</li>
+        </ul>
+        <h3>Tecnología</h3>
+        <p>Motor <b>ngPAWS</b> (C) Carlos Sánchez, MIT.<br>
+        Sonido <b>buzz.js</b> (C) Jay Salvat, MIT.<br>
+        <b>jQuery</b> (C) jQuery Foundation, MIT.</p>
+        <h3>Offline</h3>
+        <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
+      `
+    };
+  }
+
+  // =========================================================
+  //  BOTÓN FLOTANTE + ATAJOS
+  // =========================================================
+  function addMenuButton() {
+    if ($('#ng-btn-menu')) return;
+    const btn = document.createElement('button');
+    btn.id = 'ng-btn-menu';
+    btn.title = 'Menú';
+    btn.setAttribute('aria-label', 'Menú');
+    btn.textContent = '☰';
+    btn.addEventListener('click', () => openModal(viewMain()));
+    document.body.appendChild(btn);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $('#ng-modal') && $('#ng-modal').classList.contains('open')) {
+      closeModal();
+      e.preventDefault();
+    }
+  });
+
+  // =========================================================
+  //  SUSTITUIR LOS prompt() DEL JUEGO
+  // =========================================================
+  function overrideGameSaveLoad() {
+    if (typeof window.ACCsave === 'function')
+      window.ACCsave = function () { openModal(viewSave()); };
+    if (typeof window.ACCload === 'function')
+      window.ACCload = function () { openModal(viewLoad()); };
+  }
+
+  // =========================================================
+  //  SERVICE WORKER
+  // =========================================================
+  function registerSW() {
+    if (!('serviceWorker' in navigator)) return;
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then(reg => {
+        console.log('SW registrado. Scope:', reg.scope);
+        reg.update().catch(() => {});
+      })
+      .catch(err => console.warn('SW no registrado:', err));
+  }
+
+  // =========================================================
+  //  INIT
+  // =========================================================
+  function init() {
+    setTimeout(() => {
+      try { applySettings(); } catch (_) {}
+      addMenuButton();
+      addQuickBar();
+      applySettings();
+      overrideGameSaveLoad();
+      registerSW();
+      console.log('Interfaz extra cargada.');
+    }, 0);
+  }
+
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+
+  window.ngpaws = {
+    openMenu:  () => openModal(viewMain()),
+    showSave:  () => openModal(viewSave()),
+    showLoad:  () => openModal(viewLoad()),
+    showMap:   () => openModal(viewMap()),
+    listSaves,
+  };
+})();
+</script>
+</body>
+</html>
