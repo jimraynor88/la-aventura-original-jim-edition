@@ -30,130 +30,88 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
 #ng-btn-menu:hover  { background: rgba(43,108,176,.85); }
 #ng-btn-menu:active { transform: scale(.92); }
 
+/* =========================================================
+   Barra rápida a dos filas, centrada, con agrupación visual
+   ========================================================= */
 #ng-quickbar {
   position: absolute;
   bottom: 8%;
-  left: 0; right: 0;
-  height: 40px;
-  padding: 4px 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 720px;
+  padding: 5px 6px;
   box-sizing: border-box;
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-  background: rgba(0,0,0,.75);
+  background: rgba(0,0,0,.78);
   border-top: 1px solid rgba(255,255,255,.08);
   border-bottom: 1px solid rgba(255,255,255,.08);
-  font-size: 13px;
   font-family: Verdana, sans-serif;
   z-index: 100;
   display: none;
-  -webkit-overflow-scrolling: touch;
+  flex-direction: column;
+  gap: 3px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
-#ng-quickbar.on { display: block; }
-#ng-quickbar::-webkit-scrollbar { height: 0; }
+#ng-quickbar.on { display: flex; }
+
+.ng-qb-row {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+}
+
 .ng-qb-btn {
-  display: inline-block;
+  flex: 1 1 0;
+  min-width: 0;
   height: 30px;
-  padding: 0 10px;
-  margin-right: 4px;
+  padding: 0 3px;
   border-radius: 6px;
   border: 1px solid #333;
-  background: #1a1a1a; color: #eaeaea;
-  font-size: 12px; font-family: inherit;
-  cursor: pointer; line-height: 28px;
-  vertical-align: middle;
+  background: #1a1a1a;
+  color: #eaeaea;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   -webkit-tap-highlight-color: transparent;
+  transition: background .12s, border-color .12s, filter .12s;
 }
-.ng-qb-btn:hover  { background: #2b6cb0; border-color: #2b6cb0; }
+.ng-qb-btn:hover  { filter: brightness(1.25); }
 .ng-qb-btn:active { transform: scale(.95); }
 
-#ng-modal {
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.75);
-  display: none; align-items: center; justify-content: center;
-  z-index: 2000; padding: 8px; box-sizing: border-box;
-  font-family: Verdana, arial, helvetica, sans-serif;
-  font-size: calc(var(--ui-base) * var(--ui-fs));
-  color: #e8e8e8; line-height: 1.4;
+/* --- Zona izquierda: salir / salidas / bajar (salir del sitio) --- */
+.ng-qb-btn.out {
+  background: #2a1a1a;
+  border-color: #4a2a2a;
+  color: #e8d0d0;
 }
-#ng-modal.open { display: flex; }
-#ng-modal-box {
-  background: #131313; border: 1px solid #2a2a2a; border-radius: 11px;
-  width: 100%; max-width: 400px; max-height: 92vh;
-  display: flex; flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0,0,0,.7); overflow: hidden;
+.ng-qb-btn.out:hover { background: #4a2a2a; border-color: #6a3a3a; filter: none; }
+
+/* --- Zona derecha: entrar / subir / mirar (internarse, mirar) --- */
+.ng-qb-btn.in {
+  background: #1a2030;
+  border-color: #2a3a5a;
+  color: #d0e0f0;
 }
-#ng-modal-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 10px 8px 6px;
-  border-bottom: 1px solid #242424; background: #161616;
+.ng-qb-btn.in:hover { background: #2a3a5a; border-color: #3a5a7a; filter: none; }
+
+/* --- Direcciones (neutro) --- */
+.ng-qb-btn.dir {
+  background: #1a1a1a;
+  border-color: #333;
 }
-#ng-modal-head > div { display: flex; align-items: center; min-width: 0; }
-#ng-modal-title {
-  font-weight: 600; font-size: 1em; color: #fff;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-#ng-modal-back {
-  background: none; border: none; color: #8ab4f8;
-  font-size: 1.4em; line-height: 1; cursor: pointer;
-  padding: 2px 8px 4px 6px; display: none;
-  -webkit-tap-highlight-color: transparent;
-}
-#ng-modal-back.visible { display: inline-block; }
-#ng-modal-x {
-  background: none; border: none; color: #999;
-  font-size: 1.15em; line-height: 1; cursor: pointer;
-  padding: 4px 8px; -webkit-tap-highlight-color: transparent;
-}
-#ng-modal-x:hover { color: #fff; }
-#ng-modal-body {
-  padding: 10px 12px 14px; overflow-y: auto; flex: 1;
-  -webkit-overflow-scrolling: touch;
-}
-#ng-modal-body h3 {
-  margin: 2px 0 8px; font-size: .72em;
-  text-transform: uppercase; letter-spacing: .1em;
-  color: #6e6e6e; font-weight: 600;
-  border-bottom: 1px solid #242424; padding-bottom: 4px;
-}
-#ng-modal-body h3:not(:first-child) { margin-top: 16px; }
-#ng-modal-body p  { margin: 5px 0; font-size: .92em; }
-#ng-modal-body ul { margin: 4px 0 4px 16px; padding: 0; font-size: .92em; }
-#ng-modal-body li { margin: 3px 0; }
-#ng-modal-body code {
-  background: #242424; padding: 1px 5px; border-radius: 3px;
-  font-family: ui-monospace, monospace; font-size: .9em; color: #ffd580;
-}
-.ng-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 11px; border-radius: 8px;
-  background: #1b1b1b; border: 1px solid #262626;
-  margin-bottom: 5px; cursor: pointer; user-select: none;
-  transition: background .12s, border-color .12s, transform .1s;
-  -webkit-tap-highlight-color: transparent;
-}
-.ng-item:hover  { background: #232323; border-color: #333; }
-.ng-item:active { transform: scale(.985); }
-.ng-item .ng-ico { font-size: 1.25em; width: 1.5em; text-align: center; flex-shrink: 0; }
-.ng-item .ng-txt { flex: 1; min-width: 0; }
-.ng-item .ng-txt b { display: block; font-weight: 600; color: #fff; font-size: .95em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ng-item .ng-txt small { display: block; color: #888; font-size: .8em;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ng-item .ng-arrow { color: #555; font-size: 1.1em; flex-shrink: 0; }
-.ng-btn {
-  padding: 7px 12px; border-radius: 7px;
-  border: 1px solid #383838; background: #1e1e1e; color: #eee;
-  cursor: pointer; font-size: .88em; font-family: inherit;
-  transition: background .12s, border-color .12s;
-  -webkit-tap-highlight-color: transparent;
-}
-.ng-btn:hover  { background: #282828; border-color: #444; }
-.ng-btn:active { transform: scale(.97); }
-.ng-btn.primary { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
-.ng-btn.primary:hover { background: #377cc0; }
-/* Botón Diagonales: marcado cuando está abierto */
+.ng-qb-btn.dir:hover { background: #2a2a2a; border-color: #444; filter: none; }
+
+/* --- Botón Diag. (morado, con indicador de desplegable) --- */
 .ng-qb-btn.diag {
+  background: #2a1a3a;
+  border-color: #4a2a6a;
+  color: #e0d0f0;
   font-weight: 600;
 }
 .ng-qb-btn.diag::after {
@@ -161,11 +119,32 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   font-size: .85em;
   opacity: .7;
 }
+.ng-qb-btn.diag:hover,
 .ng-qb-btn.diag.open {
-  background: #2b6cb0;
-  border-color: #2b6cb0;
+  background: #4a2a6a;
+  border-color: #6a3a8a;
+  filter: none;
 }
 .ng-qb-btn.diag.open::after { content: ' ▴'; }
+
+/* --- Mirar: destacado en azul (manda sobre .in por orden) --- */
+.ng-qb-btn.primary {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+  color: #fff;
+  font-weight: 600;
+}
+.ng-qb-btn.primary:hover {
+  background: #377cc0;
+  border-color: #377cc0;
+  filter: none;
+}
+
+/* En pantallas muy estrechas, apretamos un poco */
+@media (max-width: 480px) {
+  .ng-qb-btn { font-size: 10px; height: 28px; }
+  #ng-quickbar { padding: 4px; }
+}
 
 /* Panel desplegable de diagonales */
 .ng-diag-popup {
@@ -329,7 +308,7 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   const SETTINGS_KEY = 'ngpaws_settings';
   const VISITED_KEY  = 'ngpaws_visited';
   const AUTO_SLOT    = '__AUTO__';
-  const AUTO_EVERY   = 20;
+  const AUTO_EVERY   = 10;
 
   const $ = sel => document.querySelector(sel);
   const esc = s => String(s).replace(/[&<>"']/g,
