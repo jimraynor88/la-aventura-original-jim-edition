@@ -329,6 +329,25 @@ body {
       }
     }
   } catch (_) {}   
+
+    // =========================================================
+  //  FIX: eliminar caracteres de control heredados de PAWS.
+  //  El compilador original deja un \x01 (SOH) al inicio de
+  //  algunos mensajes ("¡LA GRAN CAVERNA!", créditos, etc.).
+  //  ngPAWS no lo interpreta y el navegador lo pinta como
+  //  un cuadradito con "SOH" dentro.
+  // =========================================================
+  if (typeof window.filterText === 'function') {
+    const _filterText_orig = window.filterText;
+    window.filterText = function (text) {
+      if (typeof text === 'string') {
+        // Quitamos SOH (0x01) y otros caracteres de control
+        // que no sean tab, salto de línea o retorno de carro.
+        text = text.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+      }
+      return _filterText_orig(text);
+    };
+  }   
   // =========================================================
   //  UTILIDADES
   // =========================================================
