@@ -152,6 +152,46 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
 .ng-btn:active { transform: scale(.97); }
 .ng-btn.primary { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
 .ng-btn.primary:hover { background: #377cc0; }
+/* Botón Diagonales: marcado cuando está abierto */
+.ng-qb-btn.diag {
+  font-weight: 600;
+}
+.ng-qb-btn.diag::after {
+  content: ' ▾';
+  font-size: .85em;
+  opacity: .7;
+}
+.ng-qb-btn.diag.open {
+  background: #2b6cb0;
+  border-color: #2b6cb0;
+}
+.ng-qb-btn.diag.open::after { content: ' ▴'; }
+
+/* Panel desplegable de diagonales */
+.ng-diag-popup {
+  position: fixed;
+  z-index: 150;
+  display: none;
+  background: rgba(20,20,20,.97);
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.7);
+  backdrop-filter: blur(6px);
+}
+.ng-diag-popup.open { display: block; }
+.ng-diag-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.ng-diag-grid .ng-qb-btn {
+  margin: 0;
+  min-width: 58px;
+  height: 34px;
+  line-height: 32px;
+  font-size: 13px;
+}
 .ng-btn.danger { background: #7a1f1f; border-color: #7a1f1f; color: #fff; }
 .ng-btn.danger:hover { background: #a12a2a; }
 .ng-btn.mini { padding: 4px 9px; font-size: .78em; }
