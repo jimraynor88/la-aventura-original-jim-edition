@@ -246,6 +246,42 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   }
 
   // =========================================================
+  //  FIX MÓVIL: no abrir el teclado automáticamente.
+  //  El motor llama a focusInput() constantemente (al arrancar,
+  //  tras cada comando, tras descripciones...). En móvil eso
+  //  despliega el teclado en pantalla sin que el jugador lo pida.
+  //  Solución: solo reponemos el foco si el usuario ya lo tenía
+  //  puesto, o sea, si estaba escribiendo. Si no, no hacemos nada
+  //  y el teclado permanece cerrado hasta que el usuario toque
+  //  el input directamente.
+  // =========================================================
+  (function () {
+    if (typeof window.focusInput !== 'function') return;
+    const isTouch = ('ontouchstart' in window) ||
+                    (typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0);
+    if (!isTouch) return;  // En escritorio, comportamiento original.
+
+    const _focusInput_orig = window.focusInput;
+    window.focusInput = function () {
+      const prompt = document.querySelector('.prompt');
+      const wasFocused = prompt && document.activeElement === prompt;
+
+      // Reseteamos el timeout de la partida igual que hacía el original.
+      try { window.timeout_progress = 0; } catch (_) {}
+
+      // Bajamos el scroll del texto hasta el final para que se vea
+      // la última línea, ya que ya no la forzamos por el foco.
+      const txt = document.querySelector('.text');
+      if (txt) txt.scrollTop = txt.scrollHeight;
+
+      // Solo reponemos foco si el usuario ya estaba escribiendo.
+      if (wasFocused) {
+        return _focusInput_orig.apply(this, arguments);
+      }
+    };
+  })();
+  
+  // =========================================================
   //  UTILIDADES
   // =========================================================
   const PREFIX       = 'ngpaws_savegame_';
