@@ -314,6 +314,21 @@ body {
 (function () {
   'use strict';
 
+
+    // =========================================================
+  //  FIX: alias del recurso 1 → dat/intro.png
+  //  El compilador ngPAWS registró intro.png como recurso 257,
+  //  pero el motor busca el recurso 1 al pasar por la localidad 1.
+  //  Sin esto, la pantalla de introducción sale sin imagen.
+  // =========================================================
+  try {
+    if (typeof resources !== 'undefined' && Array.isArray(resources)) {
+      const yaExiste = resources.some(r => r[0] === 1 && r[1] === 1);
+      if (!yaExiste) {
+        resources.push([1, 1, 'dat/intro.png']);
+      }
+    }
+  } catch (_) {}   
   // =========================================================
   //  UTILIDADES
   // =========================================================
@@ -483,8 +498,6 @@ body {
          <h3>Ajustes</h3>
         ${item('🔠', 'Tamaño del juego', 'Texto de la aventura',            'font')}
         ${item('🪟', 'Tamaño de menús',  'Interfaz y ventanas',             'ui')}
-        ${item(settings.sound === false ? '🔇' : '🔊',
-               'Sonido',      settings.sound === false ? 'Desactivado' : 'Activado', 'sound')}
         ${item(settings.graphics === false ? '🚫' : '🖼️',
                'Gráficos',    settings.graphics === false ? 'Desactivados' : 'Activados', 'graphics')}
         ${item('📡', 'Estado offline',   'Comprobar caché y modo sin conexión', 'offline')}
