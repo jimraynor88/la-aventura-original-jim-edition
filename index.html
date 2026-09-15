@@ -449,35 +449,137 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   })();
 
   // =========================================================
-  //  BARRA RÁPIDA
+  //  BARRA RÁPIDA + BOTÓN DIAGONALES
+  //  Organización:
+  //    borde izq.  : Diagonales, Salir, Bajar
+  //    centro-izq. : Oeste, Sur, Salidas
+  //    centro      : MIRAR (destacado)
+  //    centro-der. : Inven., Norte, Este
+  //    borde der.  : Subir, Entrar
   // =========================================================
   function addQuickBar() {
     if ($('#ng-quickbar')) return;
     const bar = document.createElement('div');
     bar.id = 'ng-quickbar';
+
     const cmds = [
-      ['MIRAR',  'MIRAR'],
-      ['INV',    'INVENTARIO'],
-      ['SALIDAS','SALIDAS'],
-      ['N',  'N'], ['S',  'S'], ['E',  'E'], ['O',  'O'],
-      ['NE', 'NE'], ['NO', 'NO'], ['SE', 'SE'], ['SO', 'SO'],
-      ['↑',  'ARRIBA'], ['↓', 'ABAJO'],
-      ['ENT', 'ENTRAR'], ['SAL', 'SALIR'],
+      // --- Borde izquierdo ---
+      { label: 'Diag.',   cmd: '__DIAG__', diag: true },
+      { label: 'Salir',   cmd: 'SALIR' },
+      { label: 'Bajar',   cmd: 'BAJAR' },
+      // --- Centro-izquierda ---
+      { label: 'Oeste',   cmd: 'OESTE' },
+      { label: 'Sur',     cmd: 'SUR' },
+      { label: 'Salidas', cmd: 'SALIDAS' },
+      // --- Centro ---
+      { label: 'MIRAR',   cmd: 'MIRAR', primary: true },
+      // --- Centro-derecha ---
+      { label: 'Inven.',  cmd: 'INVENTARIO' },
+      { label: 'Norte',   cmd: 'NORTE' },
+      { label: 'Este',    cmd: 'ESTE' },
+      // --- Borde derecho ---
+      { label: 'Subir',   cmd: 'SUBIR' },
+      { label: 'Entrar',  cmd: 'ENTRAR' },
     ];
-    bar.innerHTML = cmds.map(([label, cmd]) =>
-      `<button class="ng-qb-btn" data-cmd="${cmd}">${label}</button>`
-    ).join('');
+
+    bar.innerHTML = cmds.map(c => {
+      const extra = c.primary ? ' primary' : (c.diag ? ' diag' : '');
+      return `<button class="ng-qb-btn${extra}" data-cmd="${c.cmd}">${c.label}</button>`;
+    }).join('');
     document.body.appendChild(bar);
+
+    // Panel de diagonales
+    addDiagPopup();
 
     bar.addEventListener('click', e => {
       const btn = e.target.closest('.ng-qb-btn');
       if (!btn) return;
       if (!canSendCommand()) return;
-      const cmd = btn.dataset.cmd;
-      try { window.orderEnteredLoop(cmd); } catch (err) {
-        console.warn('Quickbar:', err);
+
+      if (btn.dataset.cmd === '__DIAG__') {
+        toggleDiag(btn);
+        return;
       }
+
+      closeDiag();
+      try { window.orderEnteredLoop(btn.dataset.cmd); }
+      catch (err) { console.warn('Quickbar:', err); }
     });
+
+    // Cerrar el panel al tocar fuera
+    document.addEventListener('pointerdown', e => {
+      const pop = $('#ng-diag-popup');
+      if (!pop || !pop.classList.contains('open')) return;
+      if (pop.contains(e.target)) return;
+      if (e.target.closest('#ng-quickbar')) return;
+      closeDiag();
+    });
+
+    // Cerrar el panel al hacer scroll en la barra
+    bar.addEventListener('scroll', closeDiag, { passive: true });
+  }
+
+  // ---- Panel desplegable de diagonales ----
+  function addDiagPopup() {
+    if ($('#ng-diag-popup')) return;
+    const pop = document.createElement('div');
+    pop.id = 'ng-diag-popup';
+    pop.className = 'ng-diag-popup';
+    pop.innerHTML = `
+      <div class="ng-diag-grid">
+        <button class="ng-qb-btn" data-cmd="NO">NO ↖</button>
+        <button class="ng-qb-btn" data-cmd="NE">NE ↗</button>
+        <button class="ng-qb-btn" data-cmd="SO">SO ↙</button>
+        <button class="ng-qb-btn" data-cmd="SE">SE ↘</button>
+      </div>`;
+    document.body.appendChild(pop);
+
+    pop.addEventListener('click', e => {
+      const btn = e.target.closest('.ng-qb-btn');
+      if (!btn) return;
+      if (!canSendCommand()) return;
+      closeDiag();
+      try { window.orderEnteredLoop(btn.dataset.cmd); }
+      catch (err) { console.warn('Quickbar diag:', err); }
+    });
+  }
+
+  function openDiag(anchorEl) {
+    const pop = $('#ng-diag-popup');
+    if (!pop || !anchorEl) return;
+    // Medimos primero con el popup visible
+    pop.style.visibility = 'hidden';
+    pop.classList.add('open');
+    const pr = pop.getBoundingClientRect();
+    const r  = anchorEl.getBoundingClientRect();
+
+    let left = r.left + r.width / 2 - pr.width / 2;
+    let top  = r.top - pr.height - 8;
+    // Si no cabe arriba, lo abrimos debajo
+    if (top < 8) top = r.bottom + 8;
+    // Evitamos que se salga por los lados
+    left = Math.max(8, Math.min(left, window.innerWidth - pr.width - 8));
+
+    pop.style.left = left + 'px';
+    pop.style.top  = top + 'px';
+    pop.style.visibility = 'visible';
+
+    const btn = $('#ng-quickbar').querySelector('[data-cmd="__DIAG__"]');
+    if (btn) btn.classList.add('open');
+  }
+
+  function closeDiag() {
+    const pop = $('#ng-diag-popup');
+    if (pop) pop.classList.remove('open');
+    const btn = $('#ng-quickbar') && $('#ng-quickbar').querySelector('[data-cmd="__DIAG__"]');
+    if (btn) btn.classList.remove('open');
+  }
+
+  function toggleDiag(anchorEl) {
+    const pop = $('#ng-diag-popup');
+    if (!pop) return;
+    if (pop.classList.contains('open')) closeDiag();
+    else openDiag(anchorEl);
   }
 
   // =========================================================
