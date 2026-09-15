@@ -303,6 +303,57 @@ body { font-size: calc(120% * var(--game-fs)) !important; }
   overflow: hidden; text-overflow: ellipsis;
 }
 .ng-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* =========================================================
+   Scroll minimalista: solo aparece cuando hace falta
+   ========================================================= */
+html, body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;   /* evita rebote en móvil */
+}
+
+/* Área de texto del juego */
+.text {
+  overflow-y: auto !important; /* el css.css lo tenía en scroll */
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: #2f2f2f transparent;  /* Firefox */
+}
+.text::-webkit-scrollbar        { width: 6px; height: 6px; }
+.text::-webkit-scrollbar-track  { background: transparent; }
+.text::-webkit-scrollbar-thumb  {
+  background: #2f2f2f;
+  border-radius: 3px;
+}
+.text::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* Modal, mapa y transcripción: mismo tratamiento */
+#ng-modal-body,
+.ng-map-wrap,
+.transcript_layer,
+#transcript_area {
+  scrollbar-width: thin;
+  scrollbar-color: #2f2f2f transparent;
+}
+#ng-modal-body::-webkit-scrollbar,
+.ng-map-wrap::-webkit-scrollbar,
+.transcript_layer::-webkit-scrollbar,
+#transcript_area::-webkit-scrollbar        { width: 6px; height: 6px; }
+#ng-modal-body::-webkit-scrollbar-track,
+.ng-map-wrap::-webkit-scrollbar-track,
+.transcript_layer::-webkit-scrollbar-track,
+#transcript_area::-webkit-scrollbar-track  { background: transparent; }
+#ng-modal-body::-webkit-scrollbar-thumb,
+.ng-map-wrap::-webkit-scrollbar-thumb,
+.transcript_layer::-webkit-scrollbar-thumb,
+#transcript_area::-webkit-scrollbar-thumb  {
+  background: #2f2f2f;
+  border-radius: 3px;
+}
+#ng-modal-body::-webkit-scrollbar-thumb:hover,
+.ng-map-wrap::-webkit-scrollbar-thumb:hover,
+.transcript_layer::-webkit-scrollbar-thumb:hover,
+#transcript_area::-webkit-scrollbar-thumb:hover { background: #555; }  
 </style>
 </head>
 <body>
