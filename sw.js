@@ -14,6 +14,8 @@ const CORE = [
   './buzz.js',
   './code.js',
   './manifest.json'
+  './extra-ui.js',
+  './extra-dock.js',
 ];
 
 const DATOS = [
