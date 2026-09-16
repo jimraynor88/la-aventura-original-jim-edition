@@ -13,7 +13,7 @@ const CORE = [
   './jquery.js',
   './buzz.js',
   './code.js',
-  './manifest.json'
+  './manifest.json',
   './extra-ui.js',
   './extra-dock.js',
 ];
