@@ -1395,42 +1395,53 @@ function addQuickBar() {
             <h3>Muestra</h3>
             <div style="background:#0b0b0b;border:1px solid #242424;border-radius:6px;
                         padding:10px;text-align:center">
-              <button class="ng-qb-btn dir" style="
-                font-size:calc(11px * ${pct/100}) !important;
-                height:calc(30px * ${pct/100}) !important;
+              <button class="ng-qb-btn dir" id="ng-q-sample-dir" style="
+                font-size:calc(11px * ${pct/100});
+                height:calc(30px * ${pct/100});
                 display:inline-block;padding:0 12px;margin:0 4px;
                 border-radius:6px;border:1px solid #333;
                 background:#1a1a1a;color:#eaeaea">Norte</button>
-              <button class="ng-qb-btn in primary" style="
-                font-size:calc(11px * ${pct/100}) !important;
-                height:calc(30px * ${pct/100}) !important;
+              <button class="ng-qb-btn in primary" id="ng-q-sample-in" style="
+                font-size:calc(11px * ${pct/100});
+                height:calc(30px * ${pct/100});
                 display:inline-block;padding:0 12px;margin:0 4px;
                 border-radius:6px;border:1px solid #2b6cb0;
                 background:#2b6cb0;color:#fff">MIRAR</button>
             </div>
 
-            <div style="display:flex;gap:6px;justify-content:flex-start;margin-top:10px">
+            <h3>Colores</h3>
+            <p style="color:#888;font-size:.82em">
+              Cambia el aspecto de cada categoría de botón.
+            </p>
+            <div style="display:flex;gap:6px;margin-top:6px">
               <button id="ng-q-colors" class="ng-btn">🎨 Cambiar colores…</button>
             </div>
-            
-            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:16px">
               <button id="ng-q-reset" class="ng-btn">100 %</button>
               <button id="ng-q-ok"    class="ng-btn primary">Aplicar</button>
             </div>
           `,
           onMount() {
-            const range = $('#ng-qr'), num = $('#ng-q-num');
+            const range  = $('#ng-qr');
+            const num    = $('#ng-q-num');
+            const sampleDir = $('#ng-q-sample-dir');
+            const sampleIn  = $('#ng-q-sample-in');
             const root = document.documentElement;
 
             const setPct = (v) => {
               v = Math.max(70, Math.min(200, Math.round(+v)));
-              range.value = v; num.value = v;
+              range.value = v;
+              num.value   = v;
               root.style.setProperty('--qb-fs', v / 100);
-              // Actualizar muestra
-              document.querySelectorAll('#ng-modal-body .ng-qb-btn').forEach(b => {
-                b.style.fontSize = 'calc(11px * ' + (v / 100) + ')';
-                b.style.height   = 'calc(30px * ' + (v / 100) + ')';
-              });
+              if (sampleDir) {
+                sampleDir.style.fontSize = 'calc(11px * ' + (v / 100) + ')';
+                sampleDir.style.height   = 'calc(30px * ' + (v / 100) + ')';
+              }
+              if (sampleIn) {
+                sampleIn.style.fontSize = 'calc(11px * ' + (v / 100) + ')';
+                sampleIn.style.height   = 'calc(30px * ' + (v / 100) + ')';
+              }
             };
 
             range.addEventListener('input', () => setPct(range.value));
@@ -1441,11 +1452,17 @@ function addQuickBar() {
             $('#ng-q-minus').addEventListener('click', () => setPct(+range.value - 5));
             $('#ng-q-reset').addEventListener('click', () => setPct(100));
 
+            // ⬇️ ESTE es el listener que faltaba ⬇️
+            $('#ng-q-colors').addEventListener('click', () => {
+              pushView(viewQuickbarColors());
+            });
+
             $('#ng-q-ok').addEventListener('click', () => {
               settings.quickbarFontScale = range.value / 100;
               saveSettings(settings);
               if (window.NG_applyBarSettings) window.NG_applyBarSettings();
-              toast('Barra ajustada'); popView();
+              toast('Barra ajustada');
+              popView();
             });
           }
         };
