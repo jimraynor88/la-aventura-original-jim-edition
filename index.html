@@ -1910,6 +1910,10 @@ function addQuickBar() {
   //  VISTA: ACERCA DE
   // =========================================================
 function viewAbout() {
+  onMount() {
+      const btn = $('#ng-about-video-btn');
+      if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
+    }
   return {
     title: 'ℹ️ Acerca de',
     html: `
@@ -1964,10 +1968,6 @@ function viewAbout() {
       <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
     `
   };
-  onMount() {
-      const btn = $('#ng-about-video-btn');
-      if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
-    }
  }
        function viewVideo() {
         return {
