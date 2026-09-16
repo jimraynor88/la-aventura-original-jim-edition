@@ -626,7 +626,7 @@ function addQuickBar() {
   const rowTop = [
     { label: 'Salidas', cmd: 'SALIDAS',     cls: 'out' },
     { label: 'Salir',   cmd: 'SALIR',       cls: 'out' },
-    { label: 'Inven.',  cmd: 'INVENTARIO',  cls: '' },
+    { label: 'Inven.',  cmd: 'INVENTARIO',  cls: 'in primary' },
     { label: 'Entrar',  cmd: 'ENTRAR',      cls: 'in' },
     { label: 'MIRAR',   cmd: 'MIRAR',       cls: 'in primary' },
   ];
@@ -1476,7 +1476,7 @@ function addQuickBar() {
           ['in',      '➡️ Entrar / Subir / Mirar'],
           ['dir',     '🧭 Direcciones (N, S, E, O)'],
           ['diag',    '↗️ Diagonales (panel Diag.)'],
-          ['primary', '🔵 Botón MIRAR (destacado)'],
+          ['primary', '🔵 Botones destacados (MIRAR, Inven.)'],
         ];
 
         const rows = cats.map(([key, label]) => {
