@@ -1909,66 +1909,68 @@ function addQuickBar() {
   // =========================================================
   //  VISTA: ACERCA DE
   // =========================================================
-function viewAbout() {
-  onMount() {
-      const btn = $('#ng-about-video-btn');
-      if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
-    }
-  return {
-    title: 'ℹ️ Acerca de',
-    html: `
-      <h3>La Aventura Original</h3>
-      <p>Adaptación a <b>ngPAWS</b> de la aventura original de <b>Aventuras AD</b>
-      (versión reducida de <i>Advent</i>), publicada en 1989.</p>
+      function viewAbout() {
+        return {
+          title: 'ℹ️ Acerca de',
+          html: `
+            <h3>La Aventura Original</h3>
+            <p>Adaptación a <b>ngPAWS</b> de la aventura original de <b>Aventuras AD</b>
+            (versión reducida de <i>Advent</i>), publicada en 1989.</p>
 
-      <h3>Créditos originales</h3>
-      <ul>
-        <li><b>Dirección:</b> Andrés Samudio</li>
-        <li><b>Programación:</b> Manuel González</li>
-        <li><b>Gráficos:</b> Carlos Marqués</li>
-      </ul>
+            <h3>Créditos originales</h3>
+            <ul>
+              <li><b>Dirección:</b> Andrés Samudio</li>
+              <li><b>Programación:</b> Manuel González</li>
+              <li><b>Gráficos:</b> Carlos Marqués</li>
+            </ul>
 
-      <h3>Adaptación</h3>
-      <ul>
-        <li><b>ngPAWS:</b> CiberSheep</li>
-        <li><b>Betatesting:</b> Uto, I. Cabanillas, Baltasar el Arquero</li>
-      </ul>
+            <h3>Adaptación</h3>
+            <ul>
+              <li><b>ngPAWS:</b> CiberSheep</li>
+              <li><b>Betatesting:</b> Uto, I. Cabanillas, Baltasar el Arquero</li>
+            </ul>
 
-      <h3>Edición móvil</h3>
-      <p>Versión editada, corregida y adaptada a dispositivos móviles por
-      <b>Jim Raynor · Jim88.de</b>.</p>
-      <p style="color:#888;font-size:.85em">
-        Nueva barra de botones a dos filas, autoguardado periódico,
-        gestión de partidas sin <code>prompt()</code>, exportación/importación
-        en JSON y funcionamiento offline vía Service Worker.
-      </p>
-          <h3>Documental</h3>
-          <p style="color:#aaa;font-size:.88em">
-            Conferencia de los creadores originales en RetroMadrid 2013.
-          </p>
-          <div id="ng-about-video-slot"></div>
-          <div style="display:flex;gap:6px;margin-top:10px">
-            <button id="ng-about-video-btn" class="ng-btn primary">🎬 Ver entrevista</button>
-          </div>
-      <h3>Apoya el proyecto</h3>
-      <p>Si te ha gustado, puedes <b>invitarme a un café</b> por:</p>
-      <ul>
-        <li><b>PayPal</b> — https://pay.jim88.de</li>
-        <li><b>Bitcoin Lightning</b> — envío instantáneo y sin comisiones altas.</li>
-      </ul>
-      <p>Dirección Lightning:</p>
-      <p><code>jimraynor@bitrefill.me</code></p>
+            <h3>Edición móvil</h3>
+            <p>Versión editada, corregida y adaptada a dispositivos móviles por
+            <b>Jim Raynor · Jim88.de</b>.</p>
+            <p style="color:#888;font-size:.85em">
+              Nueva barra de botones a dos filas, autoguardado periódico,
+              gestión de partidas sin <code>prompt()</code>, exportación/importación
+              en JSON y funcionamiento offline vía Service Worker.
+            </p>
 
-      <h3>Tecnología</h3>
-      <p>Motor <b>ngPAWS</b> (C) Carlos Sánchez, MIT.<br>
-      Sonido <b>buzz.js</b> (C) Jay Salvat, MIT.<br>
-      <b>jQuery</b> (C) jQuery Foundation, MIT.</p>
+            <h3>Documental</h3>
+            <p style="color:#aaa;font-size:.88em">
+              Conferencia de los creadores originales en RetroMadrid 2013.
+            </p>
+            <div id="ng-about-video-slot"></div>
+            <div style="display:flex;gap:6px;margin-top:10px">
+              <button id="ng-about-video-btn" class="ng-btn primary">🎬 Ver entrevista</button>
+            </div>
 
-      <h3>Offline</h3>
-      <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
-    `
-  };
- }
+            <h3>Apoya el proyecto</h3>
+            <p>Si te ha gustado, puedes <b>invitarme a un café</b> por:</p>
+            <ul>
+              <li><b>PayPal</b> — https://pay.jim88.de</li>
+              <li><b>Bitcoin Lightning</b> — envío instantáneo y sin comisiones altas.</li>
+            </ul>
+            <p>Dirección Lightning:</p>
+            <p><code>jimraynor@bitrefill.me</code></p>
+
+            <h3>Tecnología</h3>
+            <p>Motor <b>ngPAWS</b> (C) Carlos Sánchez, MIT.<br>
+            Sonido <b>buzz.js</b> (C) Jay Salvat, MIT.<br>
+            <b>jQuery</b> (C) jQuery Foundation, MIT.</p>
+
+            <h3>Offline</h3>
+            <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
+          `,
+          onMount() {
+            const btn = $('#ng-about-video-btn');
+            if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
+          }
+        };
+      }
        function viewVideo() {
         return {
           title: '🎬 Entrevista',
