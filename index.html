@@ -1963,11 +1963,11 @@ function viewAbout() {
       <h3>Offline</h3>
       <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
     `
-    onMount() {
+  };
+  onMount() {
       const btn = $('#ng-about-video-btn');
       if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
     }
-  };
  }
        function viewVideo() {
         return {
