@@ -1938,11 +1938,18 @@ function viewAbout() {
         gestión de partidas sin <code>prompt()</code>, exportación/importación
         en JSON y funcionamiento offline vía Service Worker.
       </p>
-
+          <h3>Documental</h3>
+          <p style="color:#aaa;font-size:.88em">
+            Conferencia de los creadores originales en RetroMadrid 2013.
+          </p>
+          <div id="ng-about-video-slot"></div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <button id="ng-about-video-btn" class="ng-btn primary">🎬 Ver entrevista</button>
+          </div>
       <h3>Apoya el proyecto</h3>
       <p>Si te ha gustado, puedes <b>invitarme a un café</b> por:</p>
       <ul>
-        <li><b>PayPal</b> — pay.jim88.de</li>
+        <li><b>PayPal</b> — https://pay.jim88.de</li>
         <li><b>Bitcoin Lightning</b> — envío instantáneo y sin comisiones altas.</li>
       </ul>
       <p>Dirección Lightning:</p>
@@ -1956,8 +1963,54 @@ function viewAbout() {
       <h3>Offline</h3>
       <p>Funciona sin conexión gracias a un <b>Service Worker</b>.</p>
     `
+    onMount() {
+      const btn = $('#ng-about-video-btn');
+      if (btn) btn.addEventListener('click', () => pushView(viewVideo()));
+    }
   };
  }
+       function viewVideo() {
+        return {
+          title: '🎬 Entrevista',
+          html: `
+            <h3>RetroMadrid 2013</h3>
+            <p><b>La Aventura Original</b><br>
+            Conferencia de <b>Andrés Samudio</b> y <b>Manuel Millán</b></p>
+
+            <div style="position:relative;padding-bottom:56.25%;height:0;
+                        overflow:hidden;border-radius:8px;background:#000;
+                        margin:12px 0">
+              <iframe src="https://www.youtube.com/embed/HLcyTd_QrQs"
+                      style="position:absolute;top:0;left:0;
+                             width:100%;height:100%;border:0"
+                      allow="accelerometer; autoplay; clipboard-write;
+                             encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen></iframe>
+            </div>
+
+            <p style="color:#888;font-size:.82em">
+              Duración aproximada: 47 min. Se recomienda pantalla completa.
+            </p>
+
+            <h3>Enlaces alternativos</h3>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <a class="ng-btn" target="_blank" rel="noopener"
+                 href="https://www.youtube.com/watch?v=HLcyTd_QrQs">
+                 ▶️ Ver en YouTube
+              </a>
+              <a class="ng-btn" target="_blank" rel="noopener"
+                 href="https://www.bitchute.com/video/O6DCwgWX9Ipg/">
+                 📼 Ver en Bitchute (copia de seguridad)
+              </a>
+            </div>
+
+            <p style="color:#666;font-size:.75em;margin-top:14px">
+              El vídeo en Bitchute es una copia subida por mí para evitar
+              que se pierda; el original está alojado en YouTube.
+            </p>
+          `
+        };
+      }
   // =========================================================
   //  BOTÓN FLOTANTE + ATAJOS
   // =========================================================
