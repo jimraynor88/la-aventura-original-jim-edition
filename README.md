@@ -79,7 +79,7 @@ tuvieron.
 ### 🚀 Edición Jim
 - 📱 **Optimizada para móvil** (barra rápida de botones)
 - 🎨 **Colores personalizables** por categoría de botón
-- 📐 **Botonería acoplada** debajo del texto (o flotante)
+- 📐 **Botonería acoplada** debajo del texto, ocultable (el texto se expande al ocultarla)
 - 🔤 **Tamaño ajustable** de texto, menús y botones
 - 💾 **Autoguardado** cada N turnos
 - 🗺️ **Mapa automático** de localidades visitadas
@@ -113,7 +113,7 @@ viven en `index.html` y en los **módulos externos** `extra-ui.js` y
 | **Mapa automático** de localidades | ❌ | ✅ |
 | **Transcripción** copiable / descargable | ❌ | ✅ |
 | **Barra rápida** táctil de botones | ❌ | ✅ |
-| **Botonería acoplada** debajo del texto | ❌ | ✅ |
+| **Botonería acoplada** debajo del texto (ocultable) | ❌ | ✅ |
 | **Colores personalizables** por categoría | ❌ | ✅ |
 | **Tamaño específico** de la barra rápida | ❌ | ✅ |
 | **Filtrado** de salidas fantasma (`SALIDAS`) | ❌ | ✅ |
@@ -146,18 +146,18 @@ Cada grupo de botones tiene su propio color, personalizable desde
 | 🟪 **diag** | Diag. y panel de diagonales | Morado |
 | 🔵 **primary** | MIRAR, Inven. | Azul brillante |
 
-### 📐 Posición de la botonería
+### 📐 Botonería acoplada
 
-Se puede elegir entre dos modos desde
-`☰ → Ajustes → Posición de la botonería`:
+La barra rápida vive **debajo del texto** de la aventura, en su propia franja.
+El texto se achica automáticamente para dejarle sitio.
 
-- **Sobre el texto** (overlay): los botones flotan semitransparentes encima
-  de la aventura, como en la versión clásica.
-- **Debajo del texto** (docked) — **por defecto**: la botonería vive en su
-  propia franja inferior y el texto se achica para dejarle sitio. Al ocultar
-  la barra, el texto se expande automáticamente.
+Con el botón flotante **▼/▲ Barra** (esquina inferior derecha) se puede
+**mostrar u ocultar** la botonería: al ocultarla, el área de texto se
+**expande** y ocupa todo el hueco disponible; al mostrarla de nuevo, vuelve
+a contraerse.
 
-El botón flotante **▼/▲ Barra** sigue funcionando igual en ambos modos.
+El modo de visualización se controla desde `extra-dock.js` y el estado se
+guarda por partida en `localStorage`.
 
 ### 📖 Menú integrado (`☰`)
 
@@ -165,8 +165,7 @@ El botón flotante **▼/▲ Barra** sigue funcionando igual en ambos modos.
 - **Exportar** / **Importar** todas o una partida en `.json`
 - **Mapa** SVG de localidades visitadas (con acceso directo a **Comandos**)
 - **Transcripción** copiable o descargable
-- **Ajustes**: tamaño del juego, tamaño del menú, barra rápida, tamaño y
-  colores de los botones, posición de la botonería, autoguardado, gráficos
+- **Ajustes**: tamaño del juego, tamaño del menú, barra rápida, tamaño y colores de los botones, autoguardado, gráficos
 - **Estado offline** del Service Worker
 - **Guía** de juego y **lista de comandos** por categorías
 - **Acerca de** con créditos y **entrevista** a los creadores
