@@ -1283,10 +1283,14 @@ function addQuickBar() {
           ${renderMapSVG()}
         </div>
         <div style="display:flex;gap:6px;margin-top:12px;justify-content:flex-end">
+          <button id="ng-map-cmds" class="ng-btn">⌨️ Comandos</button>
           <button id="ng-map-clear" class="ng-btn danger">🗑️ Reiniciar mapa</button>
         </div>
       `,
       onMount() {
+        $('#ng-map-cmds').addEventListener('click', () => {
+            pushView(viewCommands());
+          });
         $('#ng-map-clear').addEventListener('click', () => {
           if (!confirm('¿Borrar el progreso del mapa?')) return;
           localStorage.removeItem(VISITED_KEY);
