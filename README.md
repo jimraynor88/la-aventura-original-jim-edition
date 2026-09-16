@@ -106,7 +106,7 @@ viven en `index.html` y en los **módulos externos** `extra-ui.js` y
 |---|:-:|:-:|
 | Parser en castellano | ✅ | ✅ |
 | Gráficos y sonido | ✅ | ✅ |
-| Guardar / Cargar con `prompt()` | ✅ | ⛔ |
+| Guardar / Cargar con `prompt()` | ✅ | ✅ |
 | Guardar / Cargar con **interfaz propia** | ❌ | ✅ |
 | **Autoguardado** periódico | ❌ | ✅ |
 | **Exportar / importar** `.json` | ❌ | ✅ |
