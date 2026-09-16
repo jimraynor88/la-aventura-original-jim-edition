@@ -835,6 +835,7 @@ function addQuickBar() {
         ${item('🔠', 'Tamaño del juego',  'Texto de la aventura',              'font')}
         ${item('🪟', 'Tamaño de menús',   'Interfaz y ventanas',               'ui')}
         ${item('🎯', 'Barra rápida',      settings.quickbar !== false ? 'Visible' : 'Oculta', 'quickbar')}
+        ${item('🔡', 'Botones de la barra','Tamaño y colores',                'qbsize')}
         ${item('💾', 'Autoguardado',      settings.autosave !== false
               ? 'Cada ' + AUTO_EVERY + ' turnos' : 'Desactivado', 'autosave')}
         ${item(settings.graphics === false ? '🚫' : '🖼️',
@@ -857,6 +858,7 @@ function addQuickBar() {
           font:     () => pushView(viewFont()),
           ui:       () => pushView(viewUISize()),
           quickbar: () => { toggleQuickbar(); replaceView(viewMain()); },
+          qbsize:   () => pushView(viewQuickbarSize()),
           autosave: () => { toggleAutosave(); replaceView(viewMain()); },
           graphics: () => { toggleGraphics(); replaceView(viewMain()); },
           offline:  async () => pushView(await viewOffline()),
@@ -995,7 +997,10 @@ function addQuickBar() {
       `,
       onMount() {
         $('#ng-r-no').addEventListener('click', popView);
-        $('#ng-r-yes').addEventListener('click', () => location.reload());
+        $('#ng-r-yes').addEventListener('click', () => {
+          try { localStorage.removeItem(VISITED_KEY); } catch (_) {}
+          location.reload();
+        });
       }
     };
   }
@@ -1304,86 +1309,311 @@ function addQuickBar() {
   // =========================================================
   //  VISTAS: AJUSTES
   // =========================================================
-  function viewFont() {
-    const pct = Math.round((settings.fontScale || 1) * 100);
-    return {
-      title: '🔠 Tamaño del juego',
-      html: `
-        <p style="color:#aaa;font-size:.88em">Ajusta el tamaño del texto de la aventura.</p>
-        <div class="ng-slider-row">
-          <span style="color:#666;font-size:.8em">Aa</span>
-          <input id="ng-fr" type="range" min="30" max="250" step="5" value="${pct}" />
-          <span style="color:#ccc;font-size:1.4em">Aa</span>
-        </div>
-        <div class="ng-slider-row" style="padding-top:0">
-          <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
-          <span id="ng-fv" class="ng-slider-val" style="min-width:60px">${pct}%</span>
-        </div>
-        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
-          <button id="ng-f-reset" class="ng-btn">100 %</button>
-          <button id="ng-f-ok"    class="ng-btn primary">Aplicar</button>
-        </div>
-      `,
-      onMount() {
-        const range = $('#ng-fr'), val = $('#ng-fv');
-        range.addEventListener('input', () => {
-          val.textContent = range.value + '%';
-          document.documentElement.style.setProperty('--game-fs', range.value / 100);
-        });
-        $('#ng-f-reset').addEventListener('click', () => {
-          range.value = 100; val.textContent = '100%';
-          document.documentElement.style.setProperty('--game-fs', 1);
-        });
-        $('#ng-f-ok').addEventListener('click', () => {
-          settings.fontScale = range.value / 100;
-          saveSettings(settings); applySettings();
-          toast('Fuente aplicada'); popView();
-        });
-      }
-    };
-  }
+      function viewFont() {
+        const pct = Math.round((settings.fontScale || 1) * 100);
+        return {
+          title: '🔠 Tamaño del juego',
+          html: `
+            <p style="color:#aaa;font-size:.88em">Ajusta el tamaño del texto de la aventura.</p>
+            <div class="ng-slider-row" style="gap:6px">
+              <button id="ng-f-minus" class="ng-btn" style="min-width:38px;font-size:1.1em">−</button>
+              <input id="ng-fr" type="range" min="30" max="250" step="5" value="${pct}" />
+              <button id="ng-f-plus"  class="ng-btn" style="min-width:38px;font-size:1.1em">+</button>
+            </div>
+            <div class="ng-slider-row" style="padding-top:0;gap:6px">
+              <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
+              <input id="ng-f-num" class="ng-input" type="number"
+                     min="30" max="250" step="5" value="${pct}"
+                     style="width:80px;text-align:right" />
+              <span style="color:#888;font-size:.9em">%</span>
+            </div>
 
-  function viewUISize() {
-    const pct = Math.round((settings.uiScale || 1) * 100);
-    return {
-      title: '🪟 Tamaño de menús',
-      html: `
-        <p style="color:#aaa;font-size:.88em">
-          Ajusta el tamaño de esta interfaz (menús, guía, ventanas).
-          No afecta al texto de la aventura.
-        </p>
-        <div class="ng-slider-row">
-          <span style="color:#666;font-size:.8em">Aa</span>
-          <input id="ng-ur" type="range" min="70" max="150" step="5" value="${pct}" />
-          <span style="color:#ccc;font-size:1.4em">Aa</span>
-        </div>
-        <div class="ng-slider-row" style="padding-top:0">
-          <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
-          <span id="ng-uv" class="ng-slider-val" style="min-width:60px">${pct}%</span>
-        </div>
-        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
-          <button id="ng-u-reset" class="ng-btn">100 %</button>
-          <button id="ng-u-ok"    class="ng-btn primary">Aplicar</button>
-        </div>
-      `,
-      onMount() {
-        const range = $('#ng-ur'), val = $('#ng-uv');
-        range.addEventListener('input', () => {
-          val.textContent = range.value + '%';
-          document.documentElement.style.setProperty('--ui-fs', range.value / 100);
-        });
-        $('#ng-u-reset').addEventListener('click', () => {
-          range.value = 100; val.textContent = '100%';
-          document.documentElement.style.setProperty('--ui-fs', 1);
-        });
-        $('#ng-u-ok').addEventListener('click', () => {
-          settings.uiScale = range.value / 100;
-          saveSettings(settings); applySettings();
-          toast('Interfaz ajustada'); popView();
-        });
+            <h3>Muestra</h3>
+            <div id="ng-f-sample" style="
+              background:#0b0b0b;border:1px solid #242424;border-radius:6px;
+              padding:10px;color:#e8e8e8;line-height:1.4;
+              font-size:calc(1em * ${pct/100});
+              transition:font-size .05s">
+              Estás en una habitación oscura. Al este ves una puerta y sobre la mesa, una llave.
+            </div>
+
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+              <button id="ng-f-reset" class="ng-btn">100 %</button>
+              <button id="ng-f-ok"    class="ng-btn primary">Aplicar</button>
+            </div>
+          `,
+          onMount() {
+            const range = $('#ng-fr'), num = $('#ng-f-num');
+            const sample = $('#ng-f-sample');
+
+            const setPct = (v) => {
+              v = Math.max(30, Math.min(250, Math.round(+v)));
+              range.value = v; num.value = v;
+              document.documentElement.style.setProperty('--game-fs', v / 100);
+              sample.style.fontSize = (v / 100) + 'em';
+            };
+
+            range.addEventListener('input', () => setPct(range.value));
+            num.addEventListener('input',   () => setPct(num.value));
+            num.addEventListener('blur',    () => setPct(num.value));
+
+            $('#ng-f-plus').addEventListener('click',  () => setPct(+range.value + 5));
+            $('#ng-f-minus').addEventListener('click', () => setPct(+range.value - 5));
+            $('#ng-f-reset').addEventListener('click', () => setPct(100));
+
+            $('#ng-f-ok').addEventListener('click', () => {
+              settings.fontScale = range.value / 100;
+              saveSettings(settings); applySettings();
+              toast('Fuente aplicada'); popView();
+            });
+          }
+        };
       }
-    };
-  }
+
+      // ---- Tamaño específico de la barra rápida ----
+      function viewQuickbarSize() {
+        const pct = Math.round((settings.quickbarFontScale || 1) * 100);
+        return {
+          title: '🔡 Botones de la barra',
+          html: `
+            <p style="color:#aaa;font-size:.88em">
+              Tamaño de la letra y de los botones de la barra rápida.
+            </p>
+            <div class="ng-slider-row" style="gap:6px">
+              <button id="ng-q-minus" class="ng-btn" style="min-width:38px;font-size:1.1em">−</button>
+              <input id="ng-qr" type="range" min="70" max="200" step="5" value="${pct}" />
+              <button id="ng-q-plus"  class="ng-btn" style="min-width:38px;font-size:1.1em">+</button>
+            </div>
+            <div class="ng-slider-row" style="padding-top:0;gap:6px">
+              <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
+              <input id="ng-q-num" class="ng-input" type="number"
+                     min="70" max="200" step="5" value="${pct}"
+                     style="width:80px;text-align:right" />
+              <span style="color:#888;font-size:.9em">%</span>
+            </div>
+
+            <h3>Muestra</h3>
+            <div style="background:#0b0b0b;border:1px solid #242424;border-radius:6px;
+                        padding:10px;text-align:center">
+              <button class="ng-qb-btn dir" style="
+                font-size:calc(11px * ${pct/100}) !important;
+                height:calc(30px * ${pct/100}) !important;
+                display:inline-block;padding:0 12px;margin:0 4px;
+                border-radius:6px;border:1px solid #333;
+                background:#1a1a1a;color:#eaeaea">Norte</button>
+              <button class="ng-qb-btn in primary" style="
+                font-size:calc(11px * ${pct/100}) !important;
+                height:calc(30px * ${pct/100}) !important;
+                display:inline-block;padding:0 12px;margin:0 4px;
+                border-radius:6px;border:1px solid #2b6cb0;
+                background:#2b6cb0;color:#fff">MIRAR</button>
+            </div>
+
+            <div style="display:flex;gap:6px;justify-content:flex-start;margin-top:10px">
+              <button id="ng-q-colors" class="ng-btn">🎨 Cambiar colores…</button>
+            </div>
+            
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+              <button id="ng-q-reset" class="ng-btn">100 %</button>
+              <button id="ng-q-ok"    class="ng-btn primary">Aplicar</button>
+            </div>
+          `,
+          onMount() {
+            const range = $('#ng-qr'), num = $('#ng-q-num');
+            const root = document.documentElement;
+
+            const setPct = (v) => {
+              v = Math.max(70, Math.min(200, Math.round(+v)));
+              range.value = v; num.value = v;
+              root.style.setProperty('--qb-fs', v / 100);
+              // Actualizar muestra
+              document.querySelectorAll('#ng-modal-body .ng-qb-btn').forEach(b => {
+                b.style.fontSize = 'calc(11px * ' + (v / 100) + ')';
+                b.style.height   = 'calc(30px * ' + (v / 100) + ')';
+              });
+            };
+
+            range.addEventListener('input', () => setPct(range.value));
+            num.addEventListener('input',   () => setPct(num.value));
+            num.addEventListener('blur',    () => setPct(num.value));
+
+            $('#ng-q-plus').addEventListener('click',  () => setPct(+range.value + 5));
+            $('#ng-q-minus').addEventListener('click', () => setPct(+range.value - 5));
+            $('#ng-q-reset').addEventListener('click', () => setPct(100));
+
+            $('#ng-q-ok').addEventListener('click', () => {
+              settings.quickbarFontScale = range.value / 100;
+              saveSettings(settings);
+              if (window.NG_applyBarSettings) window.NG_applyBarSettings();
+              toast('Barra ajustada'); popView();
+            });
+          }
+        };
+      }
+
+      // ---- Colores personalizables por categoría ----
+      function viewQuickbarColors() {
+        const pal = Object.assign({}, window.NG_DEFAULT_PALETTE || {}, settings.quickbarPalette || {});
+        const cats = [
+          ['out',     '⬅️ Salir / Bajar / Salidas'],
+          ['in',      '➡️ Entrar / Subir / Mirar'],
+          ['dir',     '🧭 Direcciones (N, S, E, O)'],
+          ['diag',    '↗️ Diagonales (panel Diag.)'],
+          ['primary', '🔵 Botón MIRAR (destacado)'],
+        ];
+
+        const rows = cats.map(([key, label]) => {
+          const c = pal[key];
+          return `
+            <div class="ng-color-row">
+              <span class="ng-color-lbl">
+                <span class="ng-color-swatch" data-swatch="${key}" style="background:${c.bg}"></span>
+                ${label}
+              </span>
+              <input type="color" data-cat="${key}" data-part="bg"
+                     value="${c.bg}" title="Fondo" />
+              <input type="color" data-cat="${key}" data-part="border"
+                     value="${c.border}" title="Borde" />
+              <input type="color" data-cat="${key}" data-part="color"
+                     value="${c.color}" title="Texto" />
+            </div>`;
+        }).join('');
+
+        return {
+          title: '🎨 Colores de la barra',
+          html: `
+            <p style="color:#aaa;font-size:.88em">
+              Personaliza el color de fondo, borde y texto de cada categoría.
+              Los cambios se ven al instante.
+            </p>
+            ${rows}
+            <p style="color:#777;font-size:.78em;margin-top:10px">
+              💡 Truco: cuando el fondo y el borde son iguales, el botón
+              se ve "plano"; cuando son diferentes, se ve "con relieve".
+            </p>
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+              <button id="ng-c-reset" class="ng-btn">Restablecer</button>
+              <button id="ng-c-ok"    class="ng-btn primary">Guardar</button>
+            </div>
+          `,
+          onMount() {
+            const state = JSON.parse(JSON.stringify(pal));
+
+            const applyLive = () => {
+              const root = document.documentElement;
+              for (const key of Object.keys(state)) {
+                const c = state[key];
+                // Derivar hover automáticamente si no se ha especificado
+                const hoverBg     = c.hoverBg     || c.bg;
+                const hoverBorder = c.hoverBorder || c.border;
+                root.style.setProperty('--qb-' + key + '-bg', c.bg);
+                root.style.setProperty('--qb-' + key + '-border', c.border);
+                root.style.setProperty('--qb-' + key + '-color', c.color);
+                root.style.setProperty('--qb-' + key + '-hover-bg', hoverBg);
+                root.style.setProperty('--qb-' + key + '-hover-border', hoverBorder);
+              }
+              // Actualizar swatches
+              document.querySelectorAll('#ng-modal-body [data-swatch]').forEach(el => {
+                el.style.background = state[el.dataset.swatch].bg;
+              });
+            };
+
+            document.querySelectorAll('#ng-modal-body input[type=color]').forEach(inp => {
+              inp.addEventListener('input', () => {
+                const cat  = inp.dataset.cat;
+                const part = inp.dataset.part;
+                state[cat][part] = inp.value;
+                applyLive();
+              });
+            });
+
+            $('#ng-c-reset').addEventListener('click', () => {
+              const dp = window.NG_DEFAULT_PALETTE;
+              for (const key of Object.keys(dp)) state[key] = { ...dp[key] };
+              applyLive();
+              document.querySelectorAll('#ng-modal-body input[type=color]').forEach(inp => {
+                inp.value = state[inp.dataset.cat][inp.dataset.part];
+              });
+            });
+
+            $('#ng-c-ok').addEventListener('click', () => {
+              settings.quickbarPalette = state;
+              saveSettings(settings);
+              if (window.NG_applyBarSettings) window.NG_applyBarSettings();
+              toast('Colores guardados'); popView();
+            });
+          }
+        };
+      }
+  
+      function viewUISize() {
+        const pct = Math.round((settings.uiScale || 1) * 100);
+        return {
+          title: '🪟 Tamaño de menús',
+          html: `
+            <p style="color:#aaa;font-size:.88em">Tamaño de esta interfaz (menús, guía, ventanas). No afecta al juego.</p>
+            <div class="ng-slider-row" style="gap:6px">
+              <button id="ng-u-minus" class="ng-btn" style="min-width:38px;font-size:1.1em">−</button>
+              <input id="ng-ur" type="range" min="70" max="150" step="5" value="${pct}" />
+              <button id="ng-u-plus"  class="ng-btn" style="min-width:38px;font-size:1.1em">+</button>
+            </div>
+            <div class="ng-slider-row" style="padding-top:0;gap:6px">
+              <span style="flex:1;color:#888;font-size:.82em">Valor actual</span>
+              <input id="ng-u-num" class="ng-input" type="number"
+                     min="70" max="150" step="5" value="${pct}"
+                     style="width:80px;text-align:right" />
+              <span style="color:#888;font-size:.9em">%</span>
+            </div>
+
+            <h3>Muestra</h3>
+            <div id="ng-u-sample" style="
+              background:#0b0b0b;border:1px solid #242424;border-radius:6px;
+              padding:10px;color:#e8e8e8;
+              font-size:calc(1em * ${pct/100});
+              transition:font-size .05s">
+              <b>Menú de ejemplo</b>
+              <ul style="margin:6px 0 0 16px">
+                <li>Guardar partida</li>
+                <li>Cargar partida</li>
+              </ul>
+            </div>
+
+            <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:14px">
+              <button id="ng-u-reset" class="ng-btn">100 %</button>
+              <button id="ng-u-ok"    class="ng-btn primary">Aplicar</button>
+            </div>
+          `,
+          onMount() {
+            const range = $('#ng-ur'), num = $('#ng-u-num');
+            const sample = $('#ng-u-sample');
+
+            const setPct = (v) => {
+              v = Math.max(70, Math.min(150, Math.round(+v)));
+              range.value = v; num.value = v;
+              document.documentElement.style.setProperty('--ui-fs', v / 100);
+              sample.style.fontSize = (v / 100) + 'em';
+            };
+
+            range.addEventListener('input', () => setPct(range.value));
+            num.addEventListener('input',   () => setPct(num.value));
+            num.addEventListener('blur',    () => setPct(num.value));
+
+            $('#ng-u-plus').addEventListener('click',  () => setPct(+range.value + 5));
+            $('#ng-u-minus').addEventListener('click', () => setPct(+range.value - 5));
+            $('#ng-u-reset').addEventListener('click', () => setPct(100));
+
+            $('#ng-q-colors').addEventListener('click', () => {
+              pushView(viewQuickbarColors());
+            });
+            
+            $('#ng-u-ok').addEventListener('click', () => {
+              settings.uiScale = range.value / 100;
+              saveSettings(settings); applySettings();
+              toast('Interfaz ajustada'); popView();
+            });
+          }
+        };
+      }
 
   function toggleQuickbar() {
     settings.quickbar = settings.quickbar === false ? true : false;
