@@ -3,7 +3,7 @@
    Cambia SW_VERSION cada vez que modifiques este archivo.
    ============================================================ */
 
-const SW_VERSION = 'v5';
+const SW_VERSION = 'v6';
 const CACHE      = 'aventura-' + SW_VERSION;
 
 const CORE = [
